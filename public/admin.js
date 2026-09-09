@@ -12,8 +12,21 @@ async function load() {
       'Could not load the admin workspace. Check your sign-in and backend configuration.',
     )
   state = await r.json()
-  $('identity').textContent = `${state.reviewer} · Revision ${state.revision}`
-  $('content').hidden = false
+  $('identity').textContent =
+    `${state.reviewer} · ${state.role} · Revision ${state.revision}`
+  renderSystem()
+  renderFacilities()
+  $('sources').replaceChildren(
+    ...state.sources.map((source) => {
+      const item = document.createElement('details')
+      item.append(
+        text('summary', source.organization ?? source.name ?? source.id),
+        text('pre', JSON.stringify(source, null, 2)),
+      )
+      return item
+    }),
+  )
+  navigate()
   $('layer').replaceChildren(
     ...state.layers
       .filter((l) => l.id !== 'datacenters')
@@ -42,14 +55,13 @@ async function load() {
     ...state.releases.map((r) => new Option(r.id, r.id)),
   )
   $('current-release').textContent =
-    `Current release: ${state.release_id ?? 'None yet'}`
-  $('history').replaceChildren(
-    ...state.audit.map((a) => {
-      const item = text('li', `${a.action} · ${a.created_at} · ${a.reviewer}`)
-      item.append(text('p', a.reason))
-      return item
-    }),
-  )
+    `Active managed release: ${state.release_id ?? 'None yet'} · Staged candidates: ${
+      state.releases
+        .filter((r) => r.id !== state.release_id)
+        .map((r) => r.id)
+        .join(', ') || 'None'
+    }`
+  renderAudit(state.audit)
   $('contacts').replaceChildren(
     ...(state.contacts?.length
       ? state.contacts.map((c) => {
@@ -67,7 +79,7 @@ async function load() {
             ),
           )
           if (c.source) item.append(text('p', `Source: ${c.source}`))
-          if (c.notification !== 'sent') {
+          if (c.notification !== 'sent' && state.capabilities.retryContact) {
             const retry = text('button', 'Retry notification')
             retry.onclick = () =>
               void save('retry-contact', {
@@ -80,6 +92,7 @@ async function load() {
         })
       : [text('p', 'No submissions yet.')]),
   )
+  applyCapabilities()
 }
 async function save(action, payload) {
   document.querySelectorAll('button').forEach((b) => (b.disabled = true))
@@ -96,7 +109,7 @@ async function save(action, payload) {
   } catch (e) {
     $('notice').textContent = e.message
   } finally {
-    document.querySelectorAll('button').forEach((b) => (b.disabled = false))
+    applyCapabilities()
   }
 }
 $('decision-form').onsubmit = (e) => {
@@ -110,11 +123,156 @@ $('decision-form').onsubmit = (e) => {
 }
 $('release-form').onsubmit = (e) => {
   e.preventDefault()
-  void save('publish', {
+  void save(e.submitter?.value ?? 'validate', {
     releaseId: $('release').value,
     reason: $('release-reason').value,
   })
 }
+$('stage-form').onsubmit = (e) => {
+  e.preventDefault()
+  try {
+    void save('stage', {
+      release: JSON.parse($('descriptor').value),
+      reason: $('stage-reason').value,
+    })
+  } catch {
+    $('notice').textContent = 'Enter a valid release descriptor JSON.'
+  }
+}
+$('facility').onchange = renderFacility
+$('older-audit').onclick = async () => {
+  try {
+    const before = state.audit.at(-1)?.seq
+    if (!before) return
+    const response = await fetch(`/api/admin/state?before=${before}`, {
+      cache: 'no-store',
+    })
+    if (!response.ok) throw Error('Could not load older audit records.')
+    const next = await response.json()
+    state.audit.push(...next.audit)
+    renderAudit(state.audit)
+    if (!next.audit.length)
+      $('notice').textContent = 'All audit records loaded.'
+  } catch (error) {
+    $('notice').textContent = error.message
+  }
+}
+window.addEventListener('hashchange', navigate)
+navigate()
 void load().catch((e) => {
   $('notice').textContent = e.message
 })
+
+function navigate() {
+  const links = [...document.querySelectorAll('nav a')]
+  const key = location.hash || '#dashboard'
+  const selected =
+    links.find((link) => link.getAttribute('href') === key) ?? links[0]
+  for (const link of links) {
+    if (link === selected) link.setAttribute('aria-current', 'page')
+    else link.removeAttribute('aria-current')
+  }
+  const module = selected.getAttribute('href')
+  $('module-title').textContent = selected.textContent
+  $('dashboard').hidden = !state || module !== '#dashboard'
+  $('content').hidden = !state || module !== '#datacenter'
+  $('placeholder').hidden = module === '#dashboard' || module === '#datacenter'
+}
+function applyCapabilities() {
+  document.querySelectorAll('button').forEach((button) => {
+    button.disabled = false
+  })
+  document.querySelectorAll('[data-capability]').forEach((button) => {
+    button.disabled = !state?.capabilities[button.dataset.capability]
+  })
+}
+function card(label, value) {
+  const item = document.createElement('div')
+  item.append(text('small', label), text('strong', value ?? 'Unknown'))
+  return item
+}
+function renderSystem() {
+  const system = state.system
+  $('publication-status').textContent = system.publicationStatus
+  $('system-status').replaceChildren(
+    card('Dread', system.deployments.dread.mode),
+    card('Main', system.deployments.main.mode),
+    card(
+      'Catalog records / map sites',
+      `${system.facilityCount} / ${system.siteCount}`,
+    ),
+    card('Contextual layers', system.contextualLayerCount),
+    card('Managed dataset prepared', system.datasetTimestamp),
+    card('Catalog checked', system.catalogCheckedAt),
+    card('Catalog snapshot', system.catalogSnapshot),
+    card(
+      `Dread version · observed ${system.deployments.observedAt}`,
+      system.deployments.dread.version,
+    ),
+    card(
+      `Main version · observed ${system.deployments.observedAt}`,
+      system.deployments.main.version,
+    ),
+  )
+  $('overview').replaceChildren(
+    card('DataCenter', 'Available'),
+    card('Public release', 'Dread review beta'),
+    card('Managed release', state.release_id ?? 'Not activated'),
+  )
+}
+function renderFacilities() {
+  const selected = $('facility').value
+  $('facility').replaceChildren(
+    ...state.facilities.map((f) => new Option(f.name, f.id)),
+  )
+  if (state.facilities.some((f) => f.id === selected))
+    $('facility').value = selected
+  renderFacility()
+}
+function renderFacility() {
+  const facility = state.facilities.find((f) => f.id === $('facility').value)
+  if (!facility) return
+  const values = {
+    ID: facility.id,
+    Slug: facility.slug,
+    Name: facility.name,
+    Operator: facility.operator,
+    Status: facility.status,
+    Coordinates: facility.location.coordinates.join(', '),
+    Address: facility.address,
+    City: facility.city,
+    'County GEOID': facility.countyGeoid,
+    'State FIPS': facility.stateFips,
+    'Source references': facility.sourceIds.join(', '),
+    'Location accuracy': facility.location.accuracy,
+    'Uncertainty (meters)': facility.location.uncertaintyM,
+    Confidence: facility.confidence,
+    'Last verified': facility.lastVerified,
+    Notes: facility.notes,
+  }
+  $('facility-detail').replaceChildren(
+    ...Object.entries(values).flatMap(([label, value]) => [
+      text('dt', label),
+      text('dd', value ?? 'Not recorded'),
+    ]),
+  )
+}
+function renderAudit(records) {
+  $('history').replaceChildren(
+    ...records.map((a) => {
+      const item = text('li', `${a.action} · ${a.created_at}`)
+      item.append(
+        text(
+          'p',
+          `Actor: ${a.reviewer} · Target: ${a.target ?? 'Legacy record; see detail'} · Revision: ${a.previous_revision ?? 'not recorded'} → ${a.resulting_revision ?? 'not recorded'}`,
+        ),
+        text('p', a.reason),
+      )
+      const details = document.createElement('details')
+      details.append(text('summary', 'Audit detail'), text('pre', a.detail))
+      item.append(details)
+      return item
+    }),
+  )
+  $('older-audit').hidden = records.length < 100
+}

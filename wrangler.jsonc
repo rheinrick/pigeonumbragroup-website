@@ -10,7 +10,7 @@
     "binding": "ASSETS",
     "run_worker_first": true,
   },
-  "services": [{ "binding": "DATACENTER", "service": "datacenterdata" }],
+  "services": [{ "binding": "DATACENTER", "service": "datacenterdata-control" }],
   "routes": [
     { "pattern": "admin.pigeonumbragroup.com", "custom_domain": true },
   ],

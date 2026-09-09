@@ -18,18 +18,61 @@
     <div class="layout">
       <aside>
         <p class="eyebrow">WORKSPACES</p>
-        <a href="/" aria-current="page">DataCenterData</a>
-        <p>
-          More PUG projects can be connected here as their administration tools
-          are ready.
-        </p>
+        <nav aria-label="Products">
+          <a href="#dashboard">Dashboard</a>
+          <a href="#datacenter">DataCenter</a>
+          <a href="#clinitype">CliniType</a>
+          <a href="#newborn-horoscope">Newborn Horoscope</a>
+          <a href="#hietool">HIETool</a>
+          <a href="#heinrick">Heinrick</a>
+          <a href="#pigeon-umbra-group">Pigeon Umbra Group</a>
+        </nav>
+        <p>Phase 10 of 19<br />Private control plane</p>
       </aside>
       <main>
-        <p class="eyebrow">DATACENTERDATA</p>
-        <h1>Administration</h1>
+        <p class="eyebrow">CONTROL PLANE</p>
+        <h1 id="module-title">Dashboard</h1>
         <p id="identity">Checking administrator access…</p>
         <p id="notice" role="status"></p>
+        <section id="placeholder" hidden>
+          <p>Administration module not yet activated.</p>
+        </section>
+        <section id="dashboard" hidden>
+          <h2>Project overview</h2>
+          <p>DataCenter is the only activated administration module.</p>
+          <div id="overview" class="status-grid"></div>
+          <a href="#datacenter">Open DataCenter administration →</a>
+        </section>
         <div id="content" hidden>
+          <section>
+            <h2>System status</h2>
+            <p id="publication-status"></p>
+            <div id="system-status" class="status-grid"></div>
+            <p>
+              Deployment versions below are recorded observations, not a live
+              Cloudflare health monitor. Managed decisions and releases do not
+              change the build-pinned public beta.
+            </p>
+          </section>
+          <section>
+            <h2>Facilities</h2>
+            <p>
+              Reviewed catalog records. Missing values remain unknown. Changes
+              require source review in the catalog, validation, and a new
+              application/release build; this console does not edit live map
+              assets.
+            </p>
+            <label>Facility<select id="facility"></select></label>
+            <dl id="facility-detail"></dl>
+          </section>
+          <section>
+            <h2>Sources</h2>
+            <p>
+              Existing provenance is preserved, including dates and location
+              uncertainty.
+            </p>
+            <div id="sources"></div>
+          </section>
           <section>
             <h2>Layer approvals</h2>
             <p>
@@ -65,7 +108,7 @@
                   minlength="8"
                   maxlength="1000"
                 ></textarea></label
-              ><button>Save decision</button>
+              ><button data-capability="decision">Save decision</button>
             </form>
             <div
               class="table-wrap"
@@ -89,13 +132,36 @@
           <section>
             <h2>Contact inbox</h2>
             <p>
-              Submissions are saved before email notifications are attempted.
+              Saved submissions are shown here. The public beta still uses email
+              links; mailbox emails are not automatically imported into this
+              inbox.
             </p>
             <div id="contacts"></div>
           </section>
           <section>
             <h2>Publication and rollback</h2>
             <p id="current-release"></p>
+            <p>
+              Prepare and upload a complete immutable descriptor with the
+              release tools before staging. Storage must be configured first.
+            </p>
+            <form id="stage-form">
+              <label
+                >Release descriptor JSON<textarea
+                  id="descriptor"
+                  required
+                  maxlength="16000"
+                  spellcheck="false"
+                ></textarea></label
+              ><label
+                >Staging reason<textarea
+                  id="stage-reason"
+                  required
+                  minlength="8"
+                  maxlength="1000"
+                ></textarea></label
+              ><button data-capability="stage">Stage release</button>
+            </form>
             <form id="release-form">
               <label
                 >Validated release<select
@@ -109,13 +175,37 @@
                   required
                   minlength="8"
                   maxlength="1000"
-                ></textarea></label
-              ><button>Use this release</button>
+                ></textarea>
+              </label>
+              <div class="actions">
+                <button
+                  name="action"
+                  value="validate"
+                  data-capability="validate"
+                >
+                  Validate release</button
+                ><button
+                  name="action"
+                  value="publish"
+                  data-capability="publish"
+                >
+                  Activate release</button
+                ><button
+                  name="action"
+                  value="rollback"
+                  data-capability="rollback"
+                >
+                  Rollback
+                </button>
+              </div>
             </form>
           </section>
           <section>
             <h2>Audit history</h2>
             <ol id="history"></ol>
+            <button id="older-audit" type="button">
+              Load older audit records
+            </button>
           </section>
         </div>
       </main>

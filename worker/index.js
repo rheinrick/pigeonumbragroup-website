@@ -14,10 +14,10 @@ export default {
         'Administrator sign-in required. Cloudflare Access must be configured for this console.',
         403,
       )
-    if (!['GET', 'POST'].includes(request.method))
+    if (!['GET', 'POST', 'PUT'].includes(request.method))
       return response('Method not allowed', 405)
     if (
-      request.method === 'POST' &&
+      ['POST', 'PUT'].includes(request.method) &&
       request.headers.get('Origin') !== url.origin
     )
       return response('Same-origin request required', 403)
@@ -43,6 +43,11 @@ export default {
         if (
           ![
             '/api/admin/state',
+            '/api/admin/session',
+            '/api/admin/object',
+            '/api/admin/stage',
+            '/api/admin/validate',
+            '/api/admin/rollback',
             '/api/admin/decision',
             '/api/admin/publish',
             '/api/admin/retry-contact',
