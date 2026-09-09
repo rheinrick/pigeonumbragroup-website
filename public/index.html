@@ -27,7 +27,7 @@
           <a href="#heinrick">Heinrick</a>
           <a href="#pigeon-umbra-group">Pigeon Umbra Group</a>
         </nav>
-        <p>Phase 10 of 19<br />Private control plane</p>
+        <p>Phase 12 of 19<br />Accounts and community moderation</p>
       </aside>
       <main>
         <p class="eyebrow">CONTROL PLANE</p>
@@ -137,6 +137,61 @@
               inbox.
             </p>
             <div id="contacts"></div>
+          </section>
+          <section id="community" hidden>
+            <h2>Community</h2>
+            <p>
+              Comments, reports and public accounts. Moderator actions are
+              recorded in the audit log. Public account sessions never grant
+              administrator access.
+            </p>
+            <form id="community-search">
+              <div class="fields">
+                <label
+                  >Community records<select id="community-kind">
+                    <option value="comments">Comments</option>
+                    <option value="reports">Reports</option>
+                    <option value="users">Users</option>
+                  </select></label
+                >
+                <label
+                  >Facility<select id="community-facility">
+                    <option value="">All facilities</option>
+                  </select></label
+                >
+                <label
+                  >User ID<input id="community-user" maxlength="80"
+                /></label>
+                <label
+                  >Status<select id="community-status">
+                    <option value="">All statuses</option>
+                    <option>visible</option>
+                    <option>hidden</option>
+                    <option>removed</option>
+                    <option>pending_review</option>
+                    <option>open</option>
+                    <option>resolved</option>
+                    <option>dismissed</option>
+                    <option>active</option>
+                    <option>suspended</option>
+                    <option>banned</option>
+                    <option>deleted</option>
+                  </select></label
+                >
+                <label
+                  >Search text / display name<input
+                    id="community-query"
+                    maxlength="100"
+                /></label>
+              </div>
+              <button>Search community</button>
+            </form>
+            <p id="community-notice" role="status"></p>
+            <div id="community-results"></div>
+            <button id="community-more" hidden>
+              Load more community records
+            </button>
+            <div id="thread-context"></div>
           </section>
           <section>
             <h2>Publication and rollback</h2>

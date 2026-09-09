@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "check": "node --check worker/index.js && node --check public/admin.js && node --test tests/*.test.mjs",
+    "check": "node --check worker/index.js && node --check public/admin.js && node --check public/community.js && node --test tests/*.test.mjs",
     "deploy": "node scripts/deploy.mjs",
     "test:browser": "node tests/browser.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
+    "jsonc-parser": "3.3.1",
     "wrangler": "4.130.0"
   },
   "overrides": {

@@ -259,3 +259,25 @@ summary {
     margin-bottom: 12px;
   }
 }
+
+#community article {
+  overflow-wrap: anywhere;
+}
+#community article form {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f6f7f3;
+  border-radius: 8px;
+}
+#community small {
+  display: block;
+  margin-bottom: 12px;
+}
+#community-notice:not(:empty) {
+  padding: 14px;
+  background: #e5eee1;
+  border-radius: 6px;
+}
+#thread-context {
+  margin-top: 20px;
+}

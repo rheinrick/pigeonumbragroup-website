@@ -41,6 +41,7 @@ export default {
         return response('The admin backend is not configured yet.', 503)
       if (url.pathname.startsWith('/api/admin/')) {
         if (
+          !/^\/api\/admin\/community\/(comments|thread|reports|users|comment|report|user)$/.test(url.pathname) &&
           ![
             '/api/admin/state',
             '/api/admin/session',

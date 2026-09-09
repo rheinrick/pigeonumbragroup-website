@@ -72,6 +72,7 @@ const server = createServer((req, res) => {
   const files = {
     '/': 'index.html',
     '/admin.js': 'admin.js',
+    '/community.js': 'community.js',
     '/admin.css': 'admin.css',
   }
   const file = files[req.url]
@@ -103,6 +104,58 @@ try {
   await page.route('**/api/admin/state*', (route) =>
     route.fulfill({ json: fixture }),
   )
+  const comment = {
+    id: 'comment-fixture',
+    revision: 1,
+    facility_id: 'fixture-1',
+    user_id: 'user-fixture',
+    author: 'Community member',
+    body: '<script>alert(1)</script> A review comment',
+    status: 'visible',
+    created_at: '2026-09-09T12:00:00Z',
+  }
+  const report = {
+    id: 'report-fixture',
+    revision: 1,
+    comment_id: comment.id,
+    comment_revision: 1,
+    facility_id: comment.facility_id,
+    author: comment.author,
+    author_id: comment.user_id,
+    reporter: 'Reporter',
+    reporter_user_id: 'reporter-fixture',
+    body: comment.body,
+    status: 'open',
+    reason: 'Off-topic',
+    details: 'Review details',
+    created_at: comment.created_at,
+  }
+  const actions = []
+  await page.route('**/api/admin/community/**', (route) => {
+    const path = new URL(route.request().url()).pathname.split('/').at(-1)
+    if (route.request().method() === 'POST') {
+      actions.push({ path, ...route.request().postDataJSON() })
+      return route.fulfill({ json: { saved: true } })
+    }
+    const items =
+      path === 'reports'
+        ? [report]
+        : path === 'users'
+          ? [
+              {
+                id: comment.user_id,
+                name: 'Community member',
+                status: 'active',
+                emailVerified: 1,
+                comment_count: 1,
+                createdAt: Date.now(),
+              },
+            ]
+          : [comment]
+    return route.fulfill({
+      json: { items, next: null, canModerate: fixture.role === 'owner' },
+    })
+  })
   let saved
   await page.route('**/api/admin/decision', (route) => {
     saved = route.request().postDataJSON()
@@ -159,6 +212,54 @@ try {
   await expect(
     page.getByRole('button', { name: 'Activate release', exact: true }),
   ).toBeDisabled()
+  const community = page.locator('#community')
+  await expect(
+    community.getByRole('heading', { name: 'Community', exact: true }),
+  ).toBeVisible()
+  await expect(community.locator('script')).toHaveCount(0)
+  await expect(community.locator('#community-results')).toContainText(
+    '<script>alert(1)</script>',
+  )
+  await community.getByRole('button', { name: 'Inspect thread' }).click()
+  await expect(community.locator('#thread-context')).toContainText(
+    'Thread context',
+  )
+  await community
+    .getByLabel('Moderation reason')
+    .fill('Reviewed browser acceptance comment')
+  await community.getByRole('button', { name: 'Apply moderation' }).click()
+  await expect(community.locator('#community-notice')).toContainText(
+    'audit log',
+  )
+  assert.equal(actions.at(-1).path, 'comment')
+  assert.equal(actions.at(-1).status, 'hidden')
+  assert.equal(actions.at(-1).revision, 1)
+  await page.locator('#community-kind').selectOption('reports')
+  await expect(community.locator('#community-results')).toContainText(
+    'Review details',
+  )
+  const reportForm = community
+    .locator('form')
+    .filter({
+      has: page.getByRole('option', { name: 'Dismiss report', exact: true }),
+    })
+  await reportForm
+    .getByLabel('Moderation reason')
+    .fill('Reviewed report details')
+  await reportForm.getByRole('button', { name: 'Apply moderation' }).click()
+  await expect.poll(() => actions.at(-1)?.path).toBe('report')
+  await page.locator('#community-kind').selectOption('users')
+  await expect(
+    community.getByRole('button', { name: 'View comment history' }),
+  ).toBeVisible()
+  await community
+    .getByLabel('Action', { exact: true })
+    .selectOption('suspended')
+  await community.getByLabel('Moderation reason').fill('Reviewed user behavior')
+  await community.getByRole('button', { name: 'Apply moderation' }).click()
+  await expect.poll(() => actions.at(-1)?.path).toBe('user')
+  await community.getByRole('button', { name: 'View comment history' }).click()
+  await expect(page.locator('#community-user')).toHaveValue('user-fixture')
   mkdirSync('test-results', { recursive: true })
   await page.screenshot({
     path: 'test-results/admin-desktop.png',
@@ -175,9 +276,22 @@ try {
     path: 'test-results/admin-mobile.png',
     fullPage: true,
   })
+  fixture.role = 'readonly'
+  await page.reload()
+  await expect(page.locator('#community-results')).toContainText(
+    'A review comment',
+  )
+  await expect(
+    page
+      .locator('#community')
+      .getByRole('button', { name: 'Apply moderation' }),
+  ).toHaveCount(0)
+  fixture.role = 'editor'
+  await page.reload()
+  await expect(page.locator('#community')).toBeHidden()
   assert.deepEqual(errors, [])
   console.log(
-    'PASS: seven-module navigation, placeholders, capability gates after save, revision payload, missing provenance, escaped content, desktop/mobile layout.',
+    'PASS: seven-module navigation, placeholders, capability gates after save, revision payload, missing provenance, escaped content, desktop/mobile layout; community moderation, report resolution, user suspension, thread/history, readonly and editor gates.',
   )
 } finally {
   await browser.close()

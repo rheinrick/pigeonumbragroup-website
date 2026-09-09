@@ -1,3 +1,4 @@
+import { setupCommunity } from './community.js'
 let state
 const $ = (id) => document.getElementById(id)
 const text = (tag, value) => {
@@ -93,6 +94,7 @@ async function load() {
       : [text('p', 'No submissions yet.')]),
   )
   applyCapabilities()
+  setupCommunity(state)
 }
 async function save(action, payload) {
   document.querySelectorAll('button').forEach((b) => (b.disabled = true))

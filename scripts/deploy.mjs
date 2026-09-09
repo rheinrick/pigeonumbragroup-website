@@ -1,3 +1,4 @@
+import { parse } from 'jsonc-parser'
 import { verifyAccess } from './access-policy.mjs'
 // Deployment is allowed only after a live, narrow Access policy has been verified.
 import { readFileSync } from 'node:fs'
@@ -10,14 +11,19 @@ if (!token)
   throw Error(
     'Supply a Cloudflare API token with Access Read and Worker deploy permissions through the environment; never commit it.',
   )
-const backend = JSON.parse(
+const configErrors = []
+const backend = parse(
   readFileSync(
     new URL(
       '../../datacenterdata-website/wrangler.control.jsonc',
       import.meta.url,
     ),
   ),
+  configErrors,
+  { allowTrailingComma: true },
 )
+if (configErrors.length)
+  throw Error('Invalid private Worker configuration. Deployment stopped.')
 async function api(path) {
   const response = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${account}${path}`,
