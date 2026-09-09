@@ -18,6 +18,7 @@ const backend = parse(
       '../../datacenterdata-website/wrangler.control.jsonc',
       import.meta.url,
     ),
+    'utf8',
   ),
   configErrors,
   { allowTrailingComma: true },
