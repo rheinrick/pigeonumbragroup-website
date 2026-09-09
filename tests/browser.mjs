@@ -272,6 +272,7 @@ try {
     ),
     true,
   )
+  await page.locator('#community').screenshot({path:'test-results/admin-community-mobile.png'})
   await page.screenshot({
     path: 'test-results/admin-mobile.png',
     fullPage: true,
