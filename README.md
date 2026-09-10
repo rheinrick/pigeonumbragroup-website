@@ -35,3 +35,7 @@ Run the guarded `npm run deploy` with the authorized Cloudflare token supplied s
 After deploy, verify anonymous Access redirect/denial and an actual authorized owner session, including layer tiers, Pro counts, billing gates and audit records. No live Stripe commerce is activated by deploying the console.
 
 R2 managed publication and contact-notification delivery require their own explicit activation and acceptance. Use `npm run release:upload-admin` in the DataCenter repository only after private R2/Access bindings and a reviewed immutable release exist. Never grant public access to a future paid dataset.
+
+## Phase 15 live acceptance
+
+Deployed version `36b41b0d-3744-49bc-a5a9-5841082e4dbe` on 2026-09-10. The guard verified the existing narrow Access policy before upload. Actual Chrome owner-session acceptance loaded 222 catalog records / 219 sites, saved an existing candidate as deferred, reloaded audit revision 0 → 1, and exported the review ledger. The public dataset stayed unchanged. This was an agent acceptance action using the authorized session, not owner source re-verification. Both checkout gates remain disabled in TEST. See the sibling Phase 15 handoff and its evidence for complete results.
