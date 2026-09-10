@@ -1,6 +1,6 @@
 # Pigeon Umbra Group — central administration
 
-Phase **14 of 19**, branch `codex/phase-14-pro-product`. Only the DataCenter module is implemented. Other application placeholders remain unactivated.
+Phase **15 of 19**, branch `codex/phase-15-inventory-expansion`. Only the DataCenter module is implemented. Other application placeholders remain unactivated.
 
 ## Current deployment boundary (2026-09-10)
 
@@ -8,7 +8,9 @@ The console is deployed at `admin.pigeonumbragroup.com` behind Cloudflare Access
 
 Phase 14 adds read-only layer access tier, comparison/analysis eligibility, source/date/release columns and product counts (43 Free, 0 Pro, 43 comparison, 5 analysis). Tier changes require a reviewed configuration/publication release, never an unaudited live dropdown. The billing overview distinguishes locally entitled users from subscription status and shows TEST mode plus both disabled public checkout gates. Real sandbox grant, scheduled cancellation, revocation and audit records were checked through the protected owner session.
 
-See the sibling DataCenter [Phase 14 handoff](../datacenterdata-website/docs/phase-14-handoff.md) for deployment versions, acceptance, commit/push records and exact rollback. Main remains a landing page. Dread is a build-pinned review beta; dated deployment observations are not a monitoring feed.
+Phase 15 adds a private Inventory review workspace: candidates and raw/normalized evidence, duplicate review, canonical edits, coverage/source-rights tables and JSON review export. Saves require an editor role, matching fingerprints/revision, evidence and a reason; every write is audited. Saving does not publish. Offline immutable release validation and deployment remain separate.
+
+See the sibling DataCenter [Phase 15 handoff](../datacenterdata-website/docs/phase-15-handoff.md) for deployment versions, acceptance, commit/push records and exact rollback. Main remains a landing page. Dread is a build-pinned review beta; dated deployment observations are not a monitoring feed.
 
 ## Implemented
 

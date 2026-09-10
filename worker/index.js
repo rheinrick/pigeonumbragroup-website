@@ -42,8 +42,13 @@ export default {
       if (url.pathname.startsWith('/api/admin/')) {
         if (
           !/^\/api\/admin\/billing\/(state|reconcile)$/.test(url.pathname) &&
-          !/^\/api\/admin\/community\/(comments|thread|reports|users|comment|report|user)$/.test(url.pathname) &&
+          !/^\/api\/admin\/community\/(comments|thread|reports|users|comment|report|user)$/.test(
+            url.pathname,
+          ) &&
           ![
+            '/api/admin/inventory',
+            '/api/admin/inventory-review',
+            '/api/admin/inventory-export',
             '/api/admin/state',
             '/api/admin/session',
             '/api/admin/object',

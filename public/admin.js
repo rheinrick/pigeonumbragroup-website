@@ -1,3 +1,4 @@
+import { setupInventory } from './inventory.js'
 import { setupBilling } from './billing.js'
 import { setupCommunity } from './community.js'
 let state
@@ -105,6 +106,7 @@ async function load() {
   applyCapabilities()
   setupCommunity(state)
   setupBilling(state)
+  setupInventory()
 }
 async function save(action, payload) {
   document.querySelectorAll('button').forEach((b) => (b.disabled = true))

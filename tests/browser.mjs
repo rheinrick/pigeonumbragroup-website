@@ -83,6 +83,7 @@ const server = createServer((req, res) => {
     '/admin.js': 'admin.js',
     '/community.js': 'community.js',
     '/billing.js': 'billing.js',
+    '/inventory.js': 'inventory.js',
     '/admin.css': 'admin.css',
   }
   const file = files[req.url]
@@ -103,6 +104,7 @@ const server = createServer((req, res) => {
 })
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
 const browser = await chromium.launch({
+  channel: process.env.PLAYWRIGHT_CHANNEL ?? 'chrome',
   executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
 })
 try {
@@ -138,6 +140,62 @@ try {
   await page.route('**/api/admin/state*', (route) =>
     route.fulfill({ json: fixture }),
   )
+  const inventoryRow = {
+    id: 'candidate-fixture',
+    fingerprint: 'current-fingerprint',
+    sourceUrl: 'https://example.test/source',
+    sourceOriginal: { name: '<script>unsafe()</script>' },
+    normalized: {
+      name: 'Inventory fixture',
+      address: '10 Example Street',
+      confidence: 'low',
+    },
+    validationIssues: [],
+    duplicates: [],
+    review: null,
+  }
+  const inventoryActions = []
+  const inventory = {
+    revision: 0,
+    release: 'inventory-fixture',
+    coverage: {
+      published: 1,
+      candidates: 1,
+      note: 'Uneven coverage',
+      states: {},
+      markets: {},
+      operators: {},
+    },
+    registry: [
+      { name: 'Permitted source', rightsStatus: 'approved_with_conditions' },
+    ],
+    counts: { needs_review: 1, defer: 0, reject: 0 },
+    total: 1,
+    pageSize: 30,
+    rows: [inventoryRow],
+  }
+  await page.route('**/api/admin/inventory**', async (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path.endsWith('inventory-review')) {
+      const value = route.request().postDataJSON()
+      inventoryActions.push(value)
+      inventoryRow.review = value
+      inventory.revision++
+      return route.fulfill({
+        json: {
+          saved: true,
+          note: 'Review recorded in audit. Public inventory remains unchanged.',
+        },
+      })
+    }
+    if (path.endsWith('inventory-export'))
+      return route.fulfill({
+        json: { schemaVersion: 1, reviews: [inventoryRow.review] },
+      })
+    return route.fulfill({
+      json: { ...inventory, canReview: fixture.role !== 'readonly' },
+    })
+  })
   const comment = {
     id: 'comment-fixture',
     revision: 1,
@@ -300,6 +358,35 @@ try {
   await expect.poll(() => actions.at(-1)?.path).toBe('user')
   await community.getByRole('button', { name: 'View comment history' }).click()
   await expect(page.locator('#community-user')).toHaveValue('user-fixture')
+  const inv = page.locator('#inventory')
+  await expect(inv).toContainText('1 discovery candidates')
+  await inv
+    .getByText('Inventory fixture · needs_review · low', { exact: true })
+    .click()
+  await inv.getByText('Original source fields', { exact: true }).click()
+  await expect(inv).toContainText('<script>unsafe()</script>')
+  await expect(inv.locator('script')).toHaveCount(0)
+  await inv
+    .getByLabel('Review reason', { exact: true })
+    .fill('Keep deferred until an operator source confirms this identity.')
+  await inv.getByRole('button', { name: 'Record review', exact: true }).click()
+  await expect(inv.getByRole('status')).toContainText(
+    'Public inventory remains unchanged',
+  )
+  assert.equal(inventoryActions[0].expectedRevision, 0)
+  assert.equal(inventoryActions[0].fingerprint, 'current-fingerprint')
+  assert.equal(inventoryActions[0].decision, 'defer')
+  await page.reload()
+  await inv
+    .getByText('Inventory fixture · defer · low', { exact: true })
+    .click()
+  await expect(inv.getByLabel('Review reason', { exact: true })).toBeVisible()
+  const downloaded = page.waitForEvent('download')
+  await inv.getByRole('button', { name: 'Export review ledger' }).click()
+  const download = await downloaded
+  assert.equal(download.suggestedFilename(), 'inventory-review-export.json')
+  const ledger = JSON.parse(readFileSync(await download.path(), 'utf8'))
+  assert.equal(ledger.reviews[0].decision, 'defer')
   mkdirSync('test-results', { recursive: true })
   await page.screenshot({
     path: 'test-results/admin-desktop.png',
@@ -329,6 +416,9 @@ try {
       .locator('#community')
       .getByRole('button', { name: 'Apply moderation' }),
   ).toHaveCount(0)
+  await expect(inv.getByRole('button', { name: 'Record review' })).toHaveCount(
+    0,
+  )
   fixture.role = 'editor'
   await page.reload()
   await expect(page.locator('#community')).toBeHidden()
