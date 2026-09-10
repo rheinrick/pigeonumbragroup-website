@@ -1,12 +1,14 @@
 # Pigeon Umbra Group — central administration
 
-Phase **10 of 19**, integration branch `codex/phase-10-control-plane`. Only DataCenter is implemented; Dashboard links to it. CliniType, Newborn Horoscope, HIETool, Heinrick and Pigeon Umbra Group show “Administration module not yet activated.” No other applications are integrated or modified.
+Phase **14 of 19**, branch `codex/phase-14-pro-product`. Only the DataCenter module is implemented. Other application placeholders remain unactivated.
 
-## Current deployment boundary (2026-09-09)
+## Current deployment boundary (2026-09-10)
 
-**Console implemented and tested locally, not deployed to its hostname.** Cloudflare Access is not initialized. Its Free checkout requires terms acceptance and authorization for over-limit charges; this was left unaccepted under the no-new-paid-activation instruction. `admin.pigeonumbragroup.com` has no Worker custom domain configured. Never deploy unprotected console assets while waiting.
+The console is deployed at `admin.pigeonumbragroup.com` behind Cloudflare Access. The sole configured owner remains `sudopug1337@datacenterdata.net`; JWT/issuer/audience/email checks protect assets and API calls. `DATACENTER` targets the private `datacenterdata-control` service with existing D1. Managed R2 publication and contact-inbox email import remain unavailable; public corrections still use email links.
 
-The `DATACENTER` service binding now targets the private `datacenterdata-control` Worker, not the public Main landing page. The private backend and its dedicated D1 exist. R2 and email bindings remain absent, Access issuer/audience empty: it fails closed. See sibling DataCenter [Phase 10 handoff](../datacenterdata-website/docs/phase-10.md) for IDs, versions, exact rollback and test evidence.
+Phase 14 adds read-only layer access tier, comparison/analysis eligibility, source/date/release columns and product counts (43 Free, 0 Pro, 43 comparison, 5 analysis). Tier changes require a reviewed configuration/publication release, never an unaudited live dropdown. The billing overview distinguishes locally entitled users from subscription status and shows TEST mode plus both disabled public checkout gates. Real sandbox grant, scheduled cancellation, revocation and audit records were checked through the protected owner session.
+
+See the sibling DataCenter [Phase 14 handoff](../datacenterdata-website/docs/phase-14-handoff.md) for deployment versions, acceptance, commit/push records and exact rollback. Main remains a landing page. Dread is a build-pinned review beta; dated deployment observations are not a monitoring feed.
 
 ## Implemented
 
@@ -24,11 +26,10 @@ Node 24.19/npm. Run `npm ci`, `npm run check`, and `npm run test:browser` (insta
 
 `npm exec wrangler deploy -- --dry-run` bundles without publishing. `npm run deploy` requires `CLOUDFLARE_API_TOKEN` supplied securely in the environment. It reads the sibling backend configuration and checks live Access app, issuer/audience, sole owner allow policy, and absence of bypass/overlapping applications before deploying. The API token needs Access Read and Worker deployment permissions. Never remove the deployment gate to work around missing configuration.
 
-## Activation sequence
+## Deployment and future activation
 
-1. Owner completes Cloudflare Access onboarding after reviewing billing consent. Create a self-hosted app for this exact hostname with only the existing administrator's email, no bypass or broad domain rules.
-2. Configure that app's team domain and audience in the sibling `wrangler.control.jsonc`; redeploy the private backend. Keep public Main and Dread Workers unchanged.
-3. Run guarded console deployment. Verify unauthenticated redirect/denial and a real authorized owner session. No external console hostname is created by local tests.
-4. R2 and notification delivery require separate activation/verification. Console browsing and D1 decisions can operate without R2, but stage/upload/validate/activate/rollback remain unavailable. No public forms or commerce are enabled here.
+Run the guarded `npm run deploy` with the authorized Cloudflare token supplied securely in the environment. The gate verifies the exact Access application, sole owner policy, issuer/audience and absence of bypass/overlapping application rules before uploading assets. Do not bypass it.
 
-Use `npm run release:upload-admin` in the DataCenter repository only after R2 and Access exist; it uploads through the protected console and stages a complete immutable release without activating it. The old public publisher uploader is not wired to this private control plane.
+After deploy, verify anonymous Access redirect/denial and an actual authorized owner session, including layer tiers, Pro counts, billing gates and audit records. No live Stripe commerce is activated by deploying the console.
+
+R2 managed publication and contact-notification delivery require their own explicit activation and acceptance. Use `npm run release:upload-admin` in the DataCenter repository only after private R2/Access bindings and a reviewed immutable release exist. Never grant public access to a future paid dataset.

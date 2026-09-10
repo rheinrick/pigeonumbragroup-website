@@ -27,6 +27,14 @@ export function setupBilling(state) {
           `${data.customersCount} customers · ${data.overview?.activePro ?? 0} active Pro · ${data.overview?.canceling ?? 0} canceling · ${data.overview?.paymentProblems ?? 0} payment problems · ${data.purchasesCount} purchases`,
         ),
       )
+      if (data.product)
+        box.append(
+          node('h3', 'Pro product'),
+          node(
+            'p',
+            `${data.product.entitledUsers} locally entitled users · ${data.product.freeLayers} Free layers · ${data.product.proLayers} Pro layers · ${data.product.comparisonLayers} comparison eligible · ${data.product.analyticsLayers} analysis eligible · Release ${data.product.release}`,
+          ),
+        )
       for (const [key, title, fields] of [
         [
           'customers',

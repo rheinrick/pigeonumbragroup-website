@@ -61,7 +61,16 @@ const fixture = {
   ],
   layers: [
     { id: 'datacenters', name: 'Datacenters' },
-    { id: 'poverty', name: 'Poverty' },
+    {
+      id: 'poverty',
+      name: 'Poverty',
+      accessTier: 'free',
+      comparisonEligible: true,
+      facilityAnalysisEligible: true,
+      release: 'r1',
+      source: 'US Census Bureau ACS',
+      updated: '2026-09-08',
+    },
   ],
   decisions: [],
   releases: [],
@@ -115,6 +124,14 @@ try {
         customersCount: 0,
         purchasesCount: 0,
         overview: {},
+        product: {
+          entitledUsers: 1,
+          freeLayers: 43,
+          proLayers: 0,
+          comparisonLayers: 43,
+          analyticsLayers: 5,
+          release: 'r1',
+        },
       },
     }),
   )

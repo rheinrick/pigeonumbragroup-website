@@ -49,6 +49,14 @@ async function load() {
                   .at(-1)?.decision ?? 'pending'),
           ),
         )
+      row.append(
+        text('td', l.accessTier ?? 'Primary'),
+        text('td', l.comparisonEligible ? 'Yes' : 'No'),
+        text('td', l.facilityAnalysisEligible ? 'Yes' : 'No'),
+        text('td', l.release ?? '—'),
+        text('td', l.source ?? 'Catalog'),
+        text('td', l.updated ?? '—'),
+      )
       return row
     }),
   )
