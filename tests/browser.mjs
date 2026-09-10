@@ -73,6 +73,7 @@ const server = createServer((req, res) => {
     '/': 'index.html',
     '/admin.js': 'admin.js',
     '/community.js': 'community.js',
+    '/billing.js': 'billing.js',
     '/admin.css': 'admin.css',
   }
   const file = files[req.url]
@@ -101,6 +102,22 @@ try {
   })
   const errors = []
   page.on('pageerror', (error) => errors.push(error.message))
+  await page.route('**/api/admin/billing/state', (route) =>
+    route.fulfill({
+      json: {
+        mode: 'test',
+        gates: { pro: false, deepDive: false },
+        canReconcile: true,
+        customers: [],
+        subscriptions: [],
+        purchases: [],
+        webhooks: [],
+        customersCount: 0,
+        purchasesCount: 0,
+        overview: {},
+      },
+    }),
+  )
   await page.route('**/api/admin/state*', (route) =>
     route.fulfill({ json: fixture }),
   )
@@ -187,6 +204,14 @@ try {
     .getByRole('navigation', { name: 'Products' })
     .getByRole('link', { name: 'DataCenter', exact: true })
     .click()
+  await expect(page.locator('#billing')).toContainText(
+    'TEST · Pro checkout disabled · Deep Dive checkout disabled',
+  )
+  await expect(
+    page
+      .locator('#billing')
+      .getByRole('button', { name: 'Reconcile', exact: true }),
+  ).toBeVisible()
   await expect(
     page.getByRole('button', { name: 'Activate release', exact: true }),
   ).toBeDisabled()
@@ -238,11 +263,9 @@ try {
   await expect(community.locator('#community-results')).toContainText(
     'Review details',
   )
-  const reportForm = community
-    .locator('form')
-    .filter({
-      has: page.getByRole('option', { name: 'Dismiss report', exact: true }),
-    })
+  const reportForm = community.locator('form').filter({
+    has: page.getByRole('option', { name: 'Dismiss report', exact: true }),
+  })
   await reportForm
     .getByLabel('Moderation reason')
     .fill('Reviewed report details')
@@ -272,7 +295,9 @@ try {
     ),
     true,
   )
-  await page.locator('#community').screenshot({path:'test-results/admin-community-mobile.png'})
+  await page
+    .locator('#community')
+    .screenshot({ path: 'test-results/admin-community-mobile.png' })
   await page.screenshot({
     path: 'test-results/admin-mobile.png',
     fullPage: true,

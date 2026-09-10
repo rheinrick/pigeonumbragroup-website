@@ -281,3 +281,6 @@ summary {
 #thread-context {
   margin-top: 20px;
 }
+
+.billing-table { overflow-x:auto; max-width:100%; }
+#billing td { max-width:28rem; overflow-wrap:anywhere; }

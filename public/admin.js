@@ -1,3 +1,4 @@
+import { setupBilling } from './billing.js'
 import { setupCommunity } from './community.js'
 let state
 const $ = (id) => document.getElementById(id)
@@ -95,6 +96,7 @@ async function load() {
   )
   applyCapabilities()
   setupCommunity(state)
+  setupBilling(state)
 }
 async function save(action, payload) {
   document.querySelectorAll('button').forEach((b) => (b.disabled = true))
