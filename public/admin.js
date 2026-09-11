@@ -1,4 +1,5 @@
 import { setupInventory } from './inventory.js'
+import { setupDeepDives } from './deep-dives.js'
 import { setupBilling } from './billing.js'
 import { setupCommunity } from './community.js'
 let state
@@ -106,6 +107,7 @@ async function load() {
   applyCapabilities()
   setupCommunity(state)
   setupBilling(state)
+  setupDeepDives(state)
   setupInventory()
 }
 async function save(action, payload) {

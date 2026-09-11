@@ -84,6 +84,7 @@ const server = createServer((req, res) => {
     '/community.js': 'community.js',
     '/billing.js': 'billing.js',
     '/inventory.js': 'inventory.js',
+    '/deep-dives.js': 'deep-dives.js',
     '/admin.css': 'admin.css',
   }
   const file = files[req.url]
@@ -139,6 +140,20 @@ try {
   )
   await page.route('**/api/admin/state*', (route) =>
     route.fulfill({ json: fixture }),
+  )
+  await page.route('**/api/admin/deep-dives', (route) =>
+    route.fulfill({ json: {
+      release: 'deep-dive-fixture', generatedAt: '2026-09-11',
+      facilityRelease: 'inventory-fixture', contextReleases: ['acs-fixture'],
+      reports: 1, registry: [{ deepDiveEligible: true }], failures: [],
+      purchases: [{status: 'paid', count: 1}], entitlements: {count: 1},
+      generationWorkflow: 'Offline validated preparation.',
+      facilities: [{facilityId: 'fixture-1', name: '<script>unsafe()</script> Deep Dive fixture',
+        operator: 'Example', available: true, status: 'deep_dive_limited',
+        reasons: ['approximate_anchor'], categories: ['Population'],
+        contextCategories: ['Electricity'], missingMeasures: ['Median income'],
+        validationStatus: 'passed', generationStatus: 'generated'}],
+    }}),
   )
   const inventoryRow = {
     id: 'candidate-fixture',
@@ -279,6 +294,14 @@ try {
     .getByRole('navigation', { name: 'Products' })
     .getByRole('link', { name: 'DataCenter', exact: true })
     .click()
+  await expect(page.locator('#deep-dives')).toContainText('deep-dive-fixture')
+  await expect(page.locator('#deep-dives')).toContainText('1 active entitlements')
+  await expect(page.locator('#deep-dives')).toContainText('<script>unsafe()</script>')
+  await expect(page.locator('#deep-dives script')).toHaveCount(0)
+  await page.getByLabel('Find facility').fill('does not exist')
+  await expect(page.locator('#deep-dives summary')).toHaveCount(1)
+  await page.getByLabel('Find facility').fill('Deep Dive fixture')
+  await expect(page.locator('#deep-dives summary')).toHaveCount(2)
   await expect(page.locator('#billing')).toContainText(
     'TEST · Pro checkout disabled · Deep Dive checkout disabled',
   )
@@ -408,6 +431,7 @@ try {
   })
   fixture.role = 'readonly'
   await page.reload()
+  await expect(page.locator('#deep-dives')).toBeVisible()
   await expect(page.locator('#community-results')).toContainText(
     'A review comment',
   )
@@ -421,6 +445,7 @@ try {
   )
   fixture.role = 'editor'
   await page.reload()
+  await expect(page.locator('#deep-dives')).toBeHidden()
   await expect(page.locator('#community')).toBeHidden()
   assert.deepEqual(errors, [])
   console.log(

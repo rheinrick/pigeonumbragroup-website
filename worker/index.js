@@ -46,6 +46,7 @@ export default {
             url.pathname,
           ) &&
           ![
+            '/api/admin/deep-dives',
             '/api/admin/inventory',
             '/api/admin/inventory-review',
             '/api/admin/inventory-export',
