@@ -76,6 +76,11 @@ export function setupInventory() {
         ),
         el('p', data.coverage.note),
       )
+      if (data.participationIntake?.length) {
+        const intake = el('details'); intake.append(el('summary', 'Company discovery candidates and accepted corrections'));
+        for (const item of data.participationIntake) intake.append(el('p', `${item.kind}: ${item.name ?? item.facility_id} · ${item.status} · ${item.staging_status ?? 'Awaiting review'} · Request ${item.id}`));
+        const link=el('a','Open private participation review / inventory export');link.href='#participation';intake.append(link);summary.append(intake);
+      }
       coverage.replaceChildren(
         el('summary', 'Coverage by state, market and operator'),
       )

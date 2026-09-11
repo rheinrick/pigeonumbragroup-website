@@ -284,3 +284,5 @@ summary {
 
 .billing-table { overflow-x:auto; max-width:100%; }
 #billing td { max-width:28rem; overflow-wrap:anywhere; }
+
+#participation form{display:grid;gap:.6rem;margin:1rem 0;padding:.8rem;border:1px solid #64748b} #participation input[type=checkbox]{width:auto} #participation textarea{min-height:90px} #participation pre{white-space:pre-wrap;overflow-wrap:anywhere} #participation .participation-table{overflow-x:auto} #participation details{margin:1rem 0} #participation article{padding:1rem;border:1px solid #64748b}
