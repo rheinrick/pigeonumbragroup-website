@@ -1,3 +1,4 @@
+import { setupEngagement } from './engagement.js'
 import { setupParticipation } from './participation.js'
 import { setupInventory } from './inventory.js'
 import { setupDeepDives } from './deep-dives.js'
@@ -109,6 +110,7 @@ async function load() {
   setupCommunity(state)
   setupBilling(state)
   setupDeepDives(state)
+  setupEngagement(state)
   setupParticipation(state)
   setupInventory()
 }
