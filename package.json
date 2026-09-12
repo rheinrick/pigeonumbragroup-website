@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "check": "node --check worker/index.js && node --check public/admin.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
+    "check": "node --check worker/index.js && node --check public/admin.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/operations.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
     "deploy": "node scripts/deploy.mjs",
     "test:browser": "node tests/browser.mjs"
   },
