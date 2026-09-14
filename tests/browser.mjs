@@ -86,6 +86,8 @@ const server = createServer((req, res) => {
     '/inventory.js': 'inventory.js',
     '/deep-dives.js': 'deep-dives.js',
     '/participation.js':'participation.js',
+    '/operations.js': 'operations.js',
+    '/engagement.js': 'engagement.js',
     '/admin.css': 'admin.css',
   }
   const file = files[req.url]

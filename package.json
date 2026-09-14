@@ -4,8 +4,11 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "check": "node --check worker/index.js && node --check public/admin.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/operations.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
+    "dev:landing": "wrangler dev --local --local-upstream localhost --port 4329",
+    "check": "node --check worker/landing.js && node --check public/landing/motion.js && node --check worker/index.js && node --check public/admin.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/operations.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
     "deploy": "node scripts/deploy.mjs",
+    "test:landing": "node tests/landing-browser.mjs",
+    "build": "wrangler deploy --dry-run",
     "test:browser": "node tests/browser.mjs"
   },
   "devDependencies": {

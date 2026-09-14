@@ -39,3 +39,7 @@ R2 managed publication and contact-notification delivery require their own expli
 ## Phase 15 live acceptance
 
 Deployed version `36b41b0d-3744-49bc-a5a9-5841082e4dbe` on 2026-09-10. The guard verified the existing narrow Access policy before upload. Actual Chrome owner-session acceptance loaded 222 catalog records / 219 sites, saved an existing candidate as deferred, reloaded audit revision 0 → 1, and exported the review ledger. The public dataset stayed unchanged. This was an agent acceptance action using the authorized session, not owner source re-verification. Both checkout gates remain disabled in TEST. See the sibling Phase 15 handoff and its evidence for complete results.
+
+## Public landing page
+
+See [landing-page documentation](docs/landing-page.md) for the public page, licensed media, local preview, tests, and separate production routing requirements.

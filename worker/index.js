@@ -1,3 +1,4 @@
+import { landing } from './landing.js'
 const headers = {
   'Cache-Control': 'no-store',
   'X-Robots-Tag': 'noindex, nofollow',
@@ -8,6 +9,8 @@ const headers = {
 const response = (message, status) => new Response(message, { status, headers })
 export default {
   async fetch(request, env) {
+    const publicResponse = await landing(request, env)
+    if (publicResponse) return publicResponse
     const url = new URL(request.url)
     if (!request.headers.get('Cf-Access-Jwt-Assertion'))
       return response(
