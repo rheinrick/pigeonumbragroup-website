@@ -16,7 +16,14 @@ The local upstream override is intentional: Wrangler otherwise derives the admin
 
 `public/landing/index.html`, `landing.css`, and `motion.js` contain the page. The original `public/index.html` remains the admin console. `worker/landing.js` serves only an explicit public file allowlist on the apex/www hostname (or localhost for development), before admin authentication. Public rendering performs no admin service requests. Unknown public paths return 404; the admin hostname retains its original identity verification, APIs, no-store and noindex headers.
 
-**No production deployment or DNS/Access change is included.** Existing Wrangler routes remain admin-only. A separately approved production step must attach the public hostname(s), confirm their public Access policy, preserve the admin hostname's Access policy, and test live delivery. This branch starts at committed Phase 19 `1a4d1be`; pending DrLoGiCo edits in the original checkout are deliberately excluded and must be reconciled before a later release.
+## Production deployment
+
+The public page deploys as the separate `pug-public` Worker using `wrangler.public.jsonc`. Its only binding is the public asset bundle. `scripts/prepare-public.mjs` stages only `public/landing/` into ignored `dist-public/`; no admin HTML, JavaScript, API or backend binding is packaged. `worker/public.js` uses the same reviewed landing handler and returns 404 for everything else.
+
+- `npm run build:public` — dry-run the public-only deployment.
+- `npm run deploy:public` — deploy the public Worker to the apex and www Worker routes.
+
+`pug-admin`, its original Wrangler configuration, Access policy and pending DrLoGiCo changes remain untouched. Do not use the admin deployment command to release the public page. See [production evidence](landing/production.md).
 
 ## Media and licensing
 

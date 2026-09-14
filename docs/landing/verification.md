@@ -31,4 +31,4 @@ The single video is within the requested 3–6 MB target. Font is a separate 56 
 
 ## Handoff boundaries
 
-No verified public inquiry email was available; link omitted. Production DNS/custom-domain routing and deployment are separate work. The original admin hostname remains the only configured production route. Full live acceptance will be needed after that step.
+No verified public inquiry email was available; link omitted. The subsequently authorized public deployment and live checks are recorded in [production.md](production.md).

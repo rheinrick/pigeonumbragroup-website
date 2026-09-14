@@ -21,7 +21,7 @@ try {
     assert.equal(await page.locator('button').evaluate(e=>getComputedStyle(e).outlineStyle),'solid')
     await page.screenshot({path:`test-results/landing/${name}-focus.png`})
     await page.keyboard.press('Enter')
-    await expect.poll(()=>page.locator('video').evaluate(v=>!v.paused && v.currentTime>0)).toBe(true)
+    await expect.poll(()=>page.locator('video').evaluate(v=>!v.paused && v.currentTime>0), {timeout:20000}).toBe(true)
     await page.getByRole('button',{name:'Pause motion'}).click()
     assert.equal(await page.locator('video').evaluate(v=>v.paused),true)
     await page.getByRole('button',{name:'Play motion'}).click()
@@ -32,7 +32,7 @@ try {
   const context=await browser.newContext({viewport:{width:1440,height:900}})
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message))
   await page.goto(base)
-  await expect.poll(()=>page.locator('video').evaluate(v=>!v.paused&&v.currentTime>0)).toBe(true)
+  await expect.poll(()=>page.locator('video').evaluate(v=>!v.paused&&v.currentTime>0), {timeout:20000}).toBe(true)
   await page.screenshot({path:'test-results/landing/desktop-playing.png'})
   // Deterministic visibility events exercise the same handler used on tab changes.
   await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'))})

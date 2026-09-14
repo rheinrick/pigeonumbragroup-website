@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "wrangler dev",
     "dev:landing": "wrangler dev --local --local-upstream localhost --port 4329",
-    "check": "node --check worker/landing.js && node --check public/landing/motion.js && node --check worker/index.js && node --check public/admin.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/operations.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
+    "check": "node --check worker/public.js && node --check scripts/prepare-public.mjs && node --check worker/landing.js && node --check public/landing/motion.js && node --check worker/index.js && node --check public/admin.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/operations.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
     "deploy": "node scripts/deploy.mjs",
     "test:landing": "node tests/landing-browser.mjs",
     "build": "wrangler deploy --dry-run",
-    "test:browser": "node tests/browser.mjs"
+    "test:browser": "node tests/browser.mjs",
+    "build:public": "wrangler deploy --config wrangler.public.jsonc --dry-run",
+    "deploy:public": "wrangler deploy --config wrangler.public.jsonc"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",

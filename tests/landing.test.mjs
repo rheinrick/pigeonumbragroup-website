@@ -30,3 +30,16 @@ test('public hostname cannot expose admin files, APIs, or arbitrary landing asse
     assert.equal((await worker.fetch(new Request(`https://${host}/landing/motion.js`),env)).status,403)
   }
 })
+
+test('standalone public deployment has no admin routing or service binding', async () => {
+  const { default: publicWorker } = await import('../worker/public.js')
+  const { readFileSync } = await import('node:fs')
+  const config = JSON.parse(readFileSync(new URL('../wrangler.public.jsonc', import.meta.url)))
+  assert.equal(config.services, undefined)
+  assert.equal(config.assets.directory, './dist-public')
+  assert.deepEqual(config.routes.map(r => r.pattern), ['pigeonumbragroup.com/*', 'www.pigeonumbragroup.com/*'])
+  const env = { ASSETS: { fetch: async () => new Response('public') } }
+  assert.equal((await publicWorker.fetch(new Request('https://pigeonumbragroup.com/'), env)).status, 200)
+  for (const url of ['https://admin.pigeonumbragroup.com/', 'https://pigeonumbragroup.com/api/admin/state', 'http://localhost/admin.js'])
+    assert.equal((await publicWorker.fetch(new Request(url), env)).status, 404)
+})

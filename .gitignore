@@ -147,3 +147,5 @@ node_modules/
 .env*
 
 /test-results/
+
+/dist-public/
