@@ -18,7 +18,7 @@ try {
     assert.deepEqual(errors,[])
     await page.screenshot({path:`test-results/landing/${name}.png`})
     await page.keyboard.press('Tab');await expect(page.getByRole('button',{name:'Play motion'})).toBeFocused()
-    assert.equal(await page.locator('button').evaluate(e=>getComputedStyle(e).outlineStyle),'solid')
+    assert.equal(await page.locator('#motion-control').evaluate(e=>getComputedStyle(e).outlineStyle),'solid')
     await page.screenshot({path:`test-results/landing/${name}-focus.png`})
     await page.keyboard.press('Enter')
     await expect.poll(()=>page.locator('video').evaluate(v=>!v.paused && v.currentTime>0), {timeout:20000}).toBe(true)

@@ -57,3 +57,7 @@ No verified public business email was found. To add Inquiries, first verify the 
 ## Verification
 
 See `docs/landing/verification.md` for results and screenshots. Existing admin browser fixture mapping was missing `operations.js` and `engagement.js`; those mappings are added so its pre-existing module imports load in the test server. Admin application files are unchanged.
+
+## Optional soundtrack
+
+The page remains silent on arrival. Enable audio opts into a separate, lazy-loaded 80-second waltz loop. See [audio licensing, configuration and verification](landing/audio/README.md). The giant typography and silent pigeon video remain unchanged.
