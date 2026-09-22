@@ -1,3 +1,4 @@
+import { recordTable, recordRow, expandableRow, displayDate } from './records.js'
 const node = (tag, text) => {
   const e = document.createElement(tag)
   e.textContent = text
@@ -53,14 +54,11 @@ export function setupEngagement(state) {
         }
       }
       box.append(refresh, run, node('h3', 'Recent scheduled runs'))
-      for (const r of d.runs)
-        box.append(
-          node(
-            'p',
-            `${new Date(r.started_at).toLocaleString()} · ${r.status}${r.error ? ' · ' + r.error : ''}`,
-          ),
-        )
+      const runs = recordTable('Recent scheduled runs', ['Started', 'Status', 'Detail'])
+      for (const r of d.runs) runs.add(recordRow([displayDate(r.started_at), r.status, r.error || '—']))
+      box.append(d.runs.length ? runs.wrap : node('p', 'No scheduled runs yet.'))
       box.append(node('h3', 'Email delivery operations'))
+      const deliveries = recordTable('Email delivery operations', ['Type', 'Status', 'Attempts', 'Detail', 'Actions'])
       for (const r of d.deliveries) {
         const p = node(
           'p',
@@ -88,11 +86,16 @@ export function setupEngagement(state) {
           }
           p.append(form)
         }
-        box.append(p)
+        deliveries.add(...expandableRow([r.kind, r.status, r.attempts, r.error || '—'], 'Delivery details', p))
       }
+      box.append(d.deliveries.length ? deliveries.wrap : node('p', 'No delivery records yet.'))
       box.append(node('h3', 'Facilities watched'))
-      for (const f of d.facilities)
-        box.append(node('p', `${f.facility_id}: ${f.watchers} watchers`))
+      const watches = recordTable('Facilities watched', ['Facility', 'Watchers'])
+      for (const f of d.facilities) {
+        const name = state.facilities?.find(item => item.id === f.facility_id)?.name ?? f.facility_id
+        watches.add(recordRow([name, f.watchers]))
+      }
+      box.append(d.facilities.length ? watches.wrap : node('p', 'No facilities watched.'))
     } catch (e) {
       box.replaceChildren(node('h2', 'Engagement'), node('p', e.message))
     }

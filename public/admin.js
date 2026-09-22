@@ -1,3 +1,4 @@
+import { recordTable, expandableRow, preview, displayDate } from './records.js'
 import {setupOperations} from './operations.js'
 import { setupEngagement } from './engagement.js'
 import { setupParticipation } from './participation.js'
@@ -23,16 +24,14 @@ async function load() {
     `${state.reviewer} · ${state.role} · Revision ${state.revision}`
   renderSystem()
   renderFacilities()
-  $('sources').replaceChildren(
-    ...state.sources.map((source) => {
-      const item = document.createElement('details')
-      item.append(
-        text('summary', source.organization ?? source.name ?? source.id),
-        text('pre', JSON.stringify(source, null, 2)),
-      )
-      return item
-    }),
-  )
+  const sources = recordTable('Sources', ['Source', 'Published', 'Details'])
+  for (const source of state.sources) {
+    sources.add(...expandableRow(
+      [source.organization ?? source.name ?? source.id, source.publishedAt ?? 'Not recorded'],
+      'View source', text('pre', JSON.stringify(source, null, 2)),
+    ))
+  }
+  $('sources').replaceChildren(sources.wrap)
   navigate()
   $('layer').replaceChildren(
     ...state.layers
@@ -77,36 +76,19 @@ async function load() {
         .join(', ') || 'None'
     }`
   renderAudit(state.audit)
-  $('contacts').replaceChildren(
-    ...(state.contacts?.length
-      ? state.contacts.map((c) => {
-          const item = document.createElement('article')
-          item.append(
-            text('h3', c.subject),
-            text(
-              'small',
-              `${c.created_at} · ${c.topic} · Notification: ${c.notification}`,
-            ),
-            text('p', c.message),
-            text(
-              'p',
-              c.email ? `Reply address: ${c.email}` : 'No reply address',
-            ),
-          )
-          if (c.source) item.append(text('p', `Source: ${c.source}`))
-          if (c.notification !== 'sent' && state.capabilities.retryContact) {
-            const retry = text('button', 'Retry notification')
-            retry.onclick = () =>
-              void save('retry-contact', {
-                id: c.id,
-                reason: 'Retrying the saved contact notification.',
-              })
-            item.append(retry)
-          }
-          return item
-        })
-      : [text('p', 'No submissions yet.')]),
-  )
+  const contacts = recordTable('Contact inbox', ['Subject', 'Received', 'Topic', 'Notification', 'Details'])
+  for (const c of state.contacts ?? []) {
+    const detail = text('div', '')
+    detail.append(text('p', c.message), text('p', c.email ? `Reply address: ${c.email}` : 'No reply address'))
+    if (c.source) detail.append(text('p', `Source: ${c.source}`))
+    if (c.notification !== 'sent' && state.capabilities.retryContact) {
+      const retry = text('button', 'Retry notification')
+      retry.onclick = () => void save('retry-contact', { id: c.id, reason: 'Retrying the saved contact notification.' })
+      detail.append(retry)
+    }
+    contacts.add(...expandableRow([preview(c.subject), displayDate(c.created_at), c.topic, c.notification], 'Read message', detail))
+  }
+  $('contacts').replaceChildren(state.contacts?.length ? contacts.wrap : text('p', 'No submissions yet.'))
   applyCapabilities()
   setupCommunity(state)
   setupBilling(state)
@@ -115,6 +97,8 @@ async function load() {
   setupOperations(state)
   setupParticipation(state)
   setupInventory()
+  buildSectionMenu()
+  navigate()
 }
 async function save(action, payload) {
   document.querySelectorAll('button').forEach((b) => (b.disabled = true))
@@ -179,26 +163,51 @@ $('older-audit').onclick = async () => {
     $('notice').textContent = error.message
   }
 }
-window.addEventListener('hashchange', navigate)
+window.addEventListener('hashchange', () => navigate(true))
+$('section-jump').onchange = (event) => { location.hash = event.target.value }
 navigate()
 void load().catch((e) => {
   $('notice').textContent = e.message
 })
 
-function navigate() {
-  const links = [...document.querySelectorAll('nav a')]
-  const key = location.hash || '#dashboard'
-  const selected =
-    links.find((link) => link.getAttribute('href') === key) ?? links[0]
+function buildSectionMenu() {
+  const panels = [...document.querySelectorAll('.workspace-panel')].filter(panel => !panel.hidden)
+  $('section-links').replaceChildren(...panels.map(panel => {
+    const link = text('a', panel.dataset.sectionLabel)
+    link.href = `#datacenter/${panel.id}`
+    return link
+  }))
+  $('section-jump').replaceChildren(...panels.map(panel => new Option(panel.dataset.sectionLabel, `#datacenter/${panel.id}`)))
+}
+function navigate(focus = false) {
+  const links = [...document.querySelectorAll('nav[aria-label="Products"] a')]
+  const hash = location.hash || '#dashboard'
+  const key = hash.split('/')[0]
+  const selected = links.find(link => link.getAttribute('href') === key) ?? links[0]
   for (const link of links) {
     if (link === selected) link.setAttribute('aria-current', 'page')
     else link.removeAttribute('aria-current')
   }
   const module = selected.getAttribute('href')
-  $('module-title').textContent = selected.textContent
+  const isDataCenter = module === '#datacenter'
+  const panels = [...document.querySelectorAll('.workspace-panel')]
+  const section = panels.find(panel => panel.id === hash.split('/')[1] && !panel.hidden) ?? $('system')
+  for (const panel of panels) panel.classList.toggle('is-current', panel === section)
+  for (const link of document.querySelectorAll('#section-links a')) {
+    if (link.getAttribute('href') === `#datacenter/${section.id}`) link.setAttribute('aria-current', 'page')
+    else link.removeAttribute('aria-current')
+  }
+  $('section-jump').value = `#datacenter/${section.id}`
+  $('module-title').textContent = isDataCenter ? `DataCenter · ${section.dataset.sectionLabel}` : selected.textContent
   $('dashboard').hidden = !state || module !== '#dashboard'
-  $('content').hidden = !state || module !== '#datacenter'
-  $('placeholder').hidden = module === '#dashboard' || module === '#datacenter'
+  $('content').hidden = !state || !isDataCenter
+  $('section-menu').hidden = !state || !isDataCenter
+  $('section-toolbar').hidden = !state || !isDataCenter
+  $('placeholder').hidden = module === '#dashboard' || isDataCenter
+  if (focus) {
+    $('module-title').focus({ preventScroll: true })
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
 }
 function applyCapabilities() {
   document.querySelectorAll('button').forEach((button) => {
@@ -280,21 +289,15 @@ function renderFacility() {
   )
 }
 function renderAudit(records) {
-  $('history').replaceChildren(
-    ...records.map((a) => {
-      const item = text('li', `${a.action} · ${a.created_at}`)
-      item.append(
-        text(
-          'p',
-          `Actor: ${a.reviewer} · Target: ${a.target ?? 'Legacy record; see detail'} · Revision: ${a.previous_revision ?? 'not recorded'} → ${a.resulting_revision ?? 'not recorded'}`,
-        ),
-        text('p', a.reason),
-      )
-      const details = document.createElement('details')
-      details.append(text('summary', 'Audit detail'), text('pre', a.detail))
-      item.append(details)
-      return item
-    }),
-  )
+  const table = recordTable('Audit history', ['Action', 'Recorded', 'Actor', 'Reason', 'Details'])
+  for (const a of records) {
+    const detail = text('div', '')
+    detail.append(
+      text('p', `Target: ${a.target ?? 'Legacy record; see detail'} · Revision: ${a.previous_revision ?? 'not recorded'} → ${a.resulting_revision ?? 'not recorded'}`),
+      text('pre', a.detail),
+    )
+    table.add(...expandableRow([a.action, displayDate(a.created_at), a.reviewer, preview(a.reason)], 'Audit detail', detail))
+  }
+  $('history').replaceChildren(records.length ? table.wrap : text('p', 'No audit records yet.'))
   $('older-audit').hidden = records.length < 100
 }

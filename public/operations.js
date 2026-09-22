@@ -1,3 +1,4 @@
+import { recordTable, recordRow } from './records.js'
 const el = (tag, text) => {
   const n = document.createElement(tag)
   n.textContent = text
@@ -65,13 +66,12 @@ export function setupOperations(state) {
         }
       }
       box.append(refresh, check, el('h3', 'Checks'))
-      for (const c of d.checks)
-        box.append(
-          el(
-            'p',
-            `${c.name}: ${Date.now() - c.checked_at > (c.name === 'scheduler' ? 15 * 60 * 1000 : c.name === 'stripe-catalog' ? 26 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000) ? 'STALE' : c.status} · ${new Date(c.checked_at).toLocaleString()} · ${c.summary}`,
-          ),
-        )
+      const checks = recordTable('Operational checks', ['Check', 'Status', 'Checked', 'Summary'])
+      for (const c of d.checks) {
+        const stale = Date.now() - c.checked_at > (c.name === 'scheduler' ? 15 * 60 * 1000 : c.name === 'stripe-catalog' ? 26 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000)
+        checks.add(recordRow([c.name, stale ? 'STALE' : c.status, new Date(c.checked_at).toLocaleString(), c.summary]))
+      }
+      box.append(d.checks.length ? checks.wrap : el('p', 'No checks recorded.'))
       box.append(
         el('h3', 'Emergency subsystem controls'),
         el(
@@ -79,6 +79,9 @@ export function setupOperations(state) {
           'Disable an affected subsystem or restore its configured behavior. These controls cannot open deployment-disabled commerce. Changes are audited.',
         ),
       )
+      const controls = el('details', '')
+      controls.append(el('summary', 'Manage emergency controls'))
+      box.append(controls)
       for (const name of d.controlNames) {
         const form = el('form', ''),
           disabled = d.controls.some(
@@ -113,7 +116,7 @@ export function setupOperations(state) {
             button.disabled = false
           }
         }
-        box.append(form)
+        controls.append(form)
       }
       const table = el('table', ''),
         head = el('tr', '')
@@ -140,7 +143,13 @@ export function setupOperations(state) {
           row.append(el('td', String(value)))
         table.append(row)
       }
-      box.append(el('h3', 'Aggregate events — rolling 30 days'), table)
+      const metrics = el('div', '')
+      metrics.className = 'table-wrap'
+      metrics.tabIndex = 0
+      metrics.setAttribute('role', 'region')
+      metrics.setAttribute('aria-label', 'Aggregate events')
+      metrics.append(table)
+      box.append(el('h3', 'Aggregate events — rolling 30 days'), metrics)
     } catch (e) {
       box.replaceChildren(
         el('h2', 'Business and operations'),

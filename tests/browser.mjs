@@ -82,6 +82,7 @@ const server = createServer((req, res) => {
     '/': 'index.html',
     '/admin.js': 'admin.js',
     '/community.js': 'community.js',
+    '/records.js': 'records.js',
     '/billing.js': 'billing.js',
     '/inventory.js': 'inventory.js',
     '/deep-dives.js': 'deep-dives.js',
@@ -295,6 +296,8 @@ try {
     .getByRole('navigation', { name: 'Products' })
     .getByRole('link', { name: 'DataCenter', exact: true })
     .click()
+  const section = (name) => page.locator('#section-jump').selectOption(`#datacenter/${name}`)
+  await section('deep-dives')
   await expect(page.locator('#deep-dives')).toContainText('deep-dive-fixture')
   await expect(page.locator('#deep-dives')).toContainText('1 active entitlements')
   await expect(page.locator('#deep-dives')).toContainText('<script>unsafe()</script>')
@@ -303,6 +306,7 @@ try {
   await expect(page.locator('#deep-dives summary')).toHaveCount(1)
   await page.getByLabel('Find facility').fill('Deep Dive fixture')
   await expect(page.locator('#deep-dives summary')).toHaveCount(2)
+  await section('billing')
   await expect(page.locator('#billing')).toContainText(
     'TEST · Pro checkout disabled · Deep Dive checkout disabled',
   )
@@ -311,6 +315,7 @@ try {
       .locator('#billing')
       .getByRole('button', { name: 'Reconcile', exact: true }),
   ).toBeVisible()
+  await section('publication')
   await expect(
     page.getByRole('button', { name: 'Activate release', exact: true }),
   ).toBeDisabled()
@@ -328,6 +333,7 @@ try {
   assert.ok(
     (await page.locator('#facility-detail').textContent()).includes('<script>'),
   )
+  await section('layers')
   await page.locator('#reason').fill('Reviewed the current source policy.')
   await page.getByRole('button', { name: 'Save decision', exact: true }).click()
   await page.getByText('Saved. The workspace has been refreshed.').waitFor()
@@ -336,6 +342,7 @@ try {
   await expect(
     page.getByRole('button', { name: 'Activate release', exact: true }),
   ).toBeDisabled()
+  await section('community')
   const community = page.locator('#community')
   await expect(
     community.getByRole('heading', { name: 'Community', exact: true }),
@@ -344,6 +351,7 @@ try {
   await expect(community.locator('#community-results')).toContainText(
     '<script>alert(1)</script>',
   )
+  await community.getByRole('button', { name: 'Review comment', exact: true }).click()
   await community.getByRole('button', { name: 'Inspect thread' }).click()
   await expect(community.locator('#thread-context')).toContainText(
     'Thread context',
@@ -359,6 +367,7 @@ try {
   assert.equal(actions.at(-1).status, 'hidden')
   assert.equal(actions.at(-1).revision, 1)
   await page.locator('#community-kind').selectOption('reports')
+  await community.getByRole('button', { name: 'Review report', exact: true }).click()
   await expect(community.locator('#community-results')).toContainText(
     'Review details',
   )
@@ -371,6 +380,7 @@ try {
   await reportForm.getByRole('button', { name: 'Apply moderation' }).click()
   await expect.poll(() => actions.at(-1)?.path).toBe('report')
   await page.locator('#community-kind').selectOption('users')
+  await community.getByRole('button', { name: 'Review account', exact: true }).click()
   await expect(
     community.getByRole('button', { name: 'View comment history' }),
   ).toBeVisible()
@@ -380,8 +390,10 @@ try {
   await community.getByLabel('Moderation reason').fill('Reviewed user behavior')
   await community.getByRole('button', { name: 'Apply moderation' }).click()
   await expect.poll(() => actions.at(-1)?.path).toBe('user')
+  await community.getByRole('button', { name: 'Review account', exact: true }).click()
   await community.getByRole('button', { name: 'View comment history' }).click()
   await expect(page.locator('#community-user')).toHaveValue('user-fixture')
+  await section('inventory')
   const inv = page.locator('#inventory')
   await expect(inv).toContainText('1 discovery candidates')
   await inv
@@ -423,6 +435,7 @@ try {
     ),
     true,
   )
+  await section('community')
   await page
     .locator('#community')
     .screenshot({ path: 'test-results/admin-community-mobile.png' })
@@ -432,7 +445,9 @@ try {
   })
   fixture.role = 'readonly'
   await page.reload()
+  await section('deep-dives')
   await expect(page.locator('#deep-dives')).toBeVisible()
+  await section('community')
   await expect(page.locator('#community-results')).toContainText(
     'A review comment',
   )
@@ -448,6 +463,7 @@ try {
   await page.reload()
   await expect(page.locator('#deep-dives')).toBeHidden()
   await expect(page.locator('#community')).toBeHidden()
+  assert.equal(await page.locator('#section-links a[href="#datacenter/community"]').count(), 0)
   assert.deepEqual(errors, [])
   console.log(
     'PASS: seven-module navigation, placeholders, capability gates after save, revision payload, missing provenance, escaped content, desktop/mobile layout; community moderation, report resolution, user suspension, thread/history, readonly and editor gates.',

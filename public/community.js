@@ -1,3 +1,4 @@
+import { recordTable, expandableRow, preview, statusLabel, displayDate } from './records.js'
 const $ = (id) => document.getElementById(id)
 const node = (tag, value) => {
   const el = document.createElement(tag)
@@ -6,7 +7,9 @@ const node = (tag, value) => {
 }
 let current,
   cursor = null,
-  kind = 'comments'
+  kind = 'comments',
+  requestVersion = 0,
+  tableBody = null
 async function api(path, payload) {
   const r = await fetch(`/api/admin/community/${path}`, {
     cache: 'no-store',
@@ -34,6 +37,7 @@ function actionForm(type, row, choices) {
     reason = document.createElement('input'),
     button = node('button', 'Apply moderation')
   for (const [value, label] of choices) select.append(new Option(label, value))
+  form.setAttribute('aria-label', type === 'report' ? 'Report resolution' : type === 'comment' ? 'Comment visibility' : 'Account status')
   reason.required = true
   reason.minLength = 3
   reason.maxLength = 1000
@@ -55,6 +59,7 @@ function actionForm(type, row, choices) {
       })
       $('community-notice').textContent = 'Saved and recorded in the audit log.'
       await load()
+      $('community-notice').scrollIntoView({ block: 'nearest' })
     } catch (e) {
       $('community-notice').textContent = e.message
     } finally {
@@ -143,6 +148,7 @@ function render(row, canModerate) {
         ),
         node('p', row.details),
         node('p', row.resolution ?? 'No resolution yet.'),
+        node('p', `Comment status: ${row.comment_status ?? 'Inspect thread for current status'}`),
       )
       if (canModerate && row.status === 'open')
         item.append(
@@ -173,7 +179,15 @@ function render(row, canModerate) {
   }
   return item
 }
+function compactRows(row, canModerate) {
+  const facility = current.facilities?.find(f => f.id === row.facility_id)?.name ?? row.facility_id ?? '—'
+  const values = kind === 'users'
+    ? [row.name, row.comment_count, displayDate(row.createdAt), statusLabel(row.status)]
+    : [preview(row.body || (row.deleted_at ? 'Comment deleted by user.' : 'No text')), kind === 'reports' ? row.reason : row.author, facility, displayDate(row.created_at), statusLabel(row.status)]
+  return expandableRow(values, kind === 'reports' ? 'Review report' : kind === 'users' ? 'Review account' : 'Review comment', render(row, canModerate))
+}
 async function load(append = false) {
+  const version = ++requestVersion
   try {
     kind = $('community-kind').value
     const params = new URLSearchParams({
@@ -182,19 +196,23 @@ async function load(append = false) {
       status: $('community-status').value,
       q: $('community-query').value,
     })
-    if (append && cursor)
-      params.set(kind === 'users' ? 'after' : 'before', cursor)
+    if (append && cursor) params.set(kind === 'users' ? 'after' : 'before', cursor)
     const data = await api(`${kind}?${params}`)
+    if (version !== requestVersion) return
     cursor = data.next
-    if (!append) $('community-results').replaceChildren()
-    $('community-results').append(
-      ...data.items.map((row) => render(row, data.canModerate)),
-    )
+    if (!append || !tableBody) {
+      const columns = kind === 'users'
+        ? ['Account', 'Comments', 'Created', 'Status', 'Details']
+        : ['Comment', kind === 'reports' ? 'Reason' : 'Author', 'Facility', 'Received', 'Status', 'Details']
+      const table = recordTable(kind === 'reports' ? 'Reported comments' : kind === 'users' ? 'Community accounts' : 'Community comments', columns)
+      tableBody = table
+      $('community-results').replaceChildren(data.items.length ? table.wrap : node('p', 'No matching records.'))
+      $('thread-context').replaceChildren()
+    }
+    for (const row of data.items) tableBody.add(...compactRows(row, data.canModerate))
     $('community-more').hidden = !cursor
-    if (!data.items.length && !append)
-      $('community-results').append(node('p', 'No matching records.'))
   } catch (e) {
-    $('community-notice').textContent = e.message
+    if (version === requestVersion) $('community-notice').textContent = e.message
   }
 }
 export function setupCommunity(state) {

@@ -17,6 +17,10 @@
     </header>
     <div class="layout">
       <aside>
+        <div id="section-menu" hidden>
+          <p class="eyebrow">DATACENTER SECTIONS</p>
+          <nav id="section-links" aria-label="DataCenter sections"></nav>
+        </div>
         <p class="eyebrow">WORKSPACES</p>
         <nav aria-label="Products">
           <a href="#dashboard">Dashboard</a>
@@ -27,11 +31,11 @@
           <a href="#heinrick">Heinrick</a>
           <a href="#pigeon-umbra-group">Pigeon Umbra Group</a>
         </nav>
-        <p>Phase 19 of 19<br />Launch readiness and operations</p>
+
       </aside>
       <main>
         <p class="eyebrow">CONTROL PLANE</p>
-        <h1 id="module-title">Dashboard</h1>
+        <h1 id="module-title" tabindex="-1">Dashboard</h1>
         <p id="identity">Checking administrator access…</p>
         <p id="notice" role="status"></p>
         <section id="placeholder" hidden>
@@ -43,8 +47,12 @@
           <div id="overview" class="status-grid"></div>
           <a href="#datacenter">Open DataCenter administration →</a>
         </section>
+        <div id="section-toolbar" hidden>
+          <label>Jump to section<select id="section-jump"></select></label>
+          <p id="section-description">Choose a section to review its records and controls.</p>
+        </div>
         <div id="content" hidden>
-          <section>
+          <section id="system" class="workspace-panel" data-section-label="Overview">
             <h2>System status</h2>
             <p id="publication-status"></p>
             <div id="system-status" class="status-grid"></div>
@@ -54,7 +62,7 @@
               change the build-pinned public beta.
             </p>
           </section>
-          <section>
+          <section id="facilities" class="workspace-panel" data-section-label="Facilities">
             <h2>Facilities</h2>
             <p>
               Reviewed catalog records. Missing values remain unknown. Changes
@@ -65,7 +73,7 @@
             <label>Facility<select id="facility"></select></label>
             <dl id="facility-detail"></dl>
           </section>
-          <section>
+          <section id="sources-panel" class="workspace-panel" data-section-label="Sources">
             <h2>Sources</h2>
             <p>
               Existing provenance is preserved, including dates and location
@@ -73,7 +81,7 @@
             </p>
             <div id="sources"></div>
           </section>
-          <section>
+          <section id="layers" class="workspace-panel" data-section-label="Layer approvals">
             <h2>Layer approvals</h2>
             <p>
               Datacenters stay primary. Free visitors can add one approved
@@ -137,7 +145,7 @@
               </table>
             </div>
           </section>
-          <section>
+          <section id="contacts-panel" class="workspace-panel" data-section-label="Contact inbox">
             <h2>Contact inbox</h2>
             <p>
               Saved submissions are shown here. The public beta still uses email
@@ -146,13 +154,13 @@
             </p>
             <div id="contacts"></div>
           </section>
-          <section id="participation" hidden></section>
-          <section id="inventory"></section>
-          <section id="deep-dives" hidden></section>
-          <section id="operations" hidden></section>
-          <section id="engagement" hidden></section>
-          <section id="billing" hidden></section>
-          <section id="community" hidden>
+          <section class="workspace-panel" data-section-label="Company participation" id="participation" hidden></section>
+          <section class="workspace-panel" data-section-label="Inventory review" id="inventory"></section>
+          <section class="workspace-panel" data-section-label="Deep Dives" id="deep-dives" hidden></section>
+          <section class="workspace-panel" data-section-label="Operations" id="operations" hidden></section>
+          <section class="workspace-panel" data-section-label="Engagement" id="engagement" hidden></section>
+          <section class="workspace-panel" data-section-label="Billing" id="billing" hidden></section>
+          <section class="workspace-panel" data-section-label="Community" id="community" hidden>
             <h2>Community</h2>
             <p>
               Comments, reports and public accounts. Moderator actions are
@@ -207,7 +215,7 @@
             </button>
             <div id="thread-context"></div>
           </section>
-          <section>
+          <section id="publication" class="workspace-panel" data-section-label="Publication">
             <h2>Publication and rollback</h2>
             <p id="current-release"></p>
             <p>
@@ -269,9 +277,9 @@
               </div>
             </form>
           </section>
-          <section>
+          <section id="audit" class="workspace-panel" data-section-label="Audit history">
             <h2>Audit history</h2>
-            <ol id="history"></ol>
+            <div id="history"></div>
             <button id="older-audit" type="button">
               Load older audit records
             </button>
