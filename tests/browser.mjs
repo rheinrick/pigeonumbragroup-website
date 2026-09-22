@@ -283,7 +283,7 @@ try {
     'Pigeon Umbra Group',
   ]) {
     await page
-      .getByRole('navigation', { name: 'Products' })
+      .getByRole('navigation', { name: 'Workspaces' })
       .getByRole('link', { name, exact: true })
       .click()
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(name)
@@ -295,11 +295,13 @@ try {
     )
     assert.equal(await page.locator('#content').isVisible(), false)
   }
-  await page
-    .getByRole('navigation', { name: 'Products' })
-    .getByRole('link', { name: 'DataCenter', exact: true })
-    .click()
-  const section = (name) => page.locator('#section-jump').selectOption(`#datacenter/${name}`)
+  const section = async (name) => {
+    if (await page.locator('#workspace-menu').getAttribute('open') === null)
+      await page.locator('#workspace-menu > summary').click()
+    if (await page.locator('#datacenter-workspace').getAttribute('open') === null)
+      await page.locator('#datacenter-workspace > summary').click()
+    await page.locator(`#section-links a[href="#datacenter/${name}"]`).click()
+  }
   await section('deep-dives')
   await expect(page.locator('#deep-dives')).toContainText('deep-dive-fixture')
   await expect(page.locator('#deep-dives')).toContainText('1 active entitlements')

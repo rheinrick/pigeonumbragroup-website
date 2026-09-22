@@ -16,22 +16,24 @@
       </div>
     </header>
     <div class="layout">
-      <aside>
-        <div id="section-menu" hidden>
-          <p class="eyebrow">DATACENTER SECTIONS</p>
-          <nav id="section-links" aria-label="DataCenter sections"></nav>
-        </div>
-        <p class="eyebrow">WORKSPACES</p>
-        <nav aria-label="Products">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#datacenter">DataCenter</a>
+      <aside aria-label="Workspace navigation">
+        <details id="workspace-menu" open>
+          <summary class="workspace-heading">Workspaces</summary>
+          <nav id="workspace-links" aria-label="Workspaces">
+            <a href="#dashboard">Dashboard</a>
+            <details id="datacenter-workspace">
+              <summary>DataCenter</summary>
+              <div id="section-menu" hidden>
+                <nav id="section-links" aria-label="DataCenter sections"></nav>
+              </div>
+            </details>
           <a href="#clinitype">CliniType</a>
           <a href="#newborn-horoscope">Newborn Horoscope</a>
           <a href="#hietool">HIETool</a>
           <a href="#heinrick">Heinrick</a>
           <a href="#pigeon-umbra-group">Pigeon Umbra Group</a>
-        </nav>
-
+          </nav>
+        </details>
       </aside>
       <main>
         <p class="eyebrow">CONTROL PLANE</p>
@@ -47,10 +49,6 @@
           <div id="overview" class="status-grid"></div>
           <a href="#datacenter">Open DataCenter administration →</a>
         </section>
-        <div id="section-toolbar" hidden>
-          <label>Jump to section<select id="section-jump"></select></label>
-          <p id="section-description">Choose a section to review its records and controls.</p>
-        </div>
         <div id="content" hidden>
           <section id="system" class="workspace-panel" data-section-label="Overview">
             <h2>System status</h2>

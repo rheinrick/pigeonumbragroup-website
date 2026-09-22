@@ -166,7 +166,15 @@ $('older-audit').onclick = async () => {
   }
 }
 window.addEventListener('hashchange', () => navigate(true))
-$('section-jump').onchange = (event) => { location.hash = event.target.value }
+const narrowNavigation = window.matchMedia('(max-width: 750px)')
+$('workspace-menu').open = !narrowNavigation.matches
+narrowNavigation.addEventListener('change', () => {
+  $('workspace-menu').open = !narrowNavigation.matches
+})
+$('section-links').addEventListener('click', (event) => {
+  const link = event.target.closest('a')
+  if (link?.getAttribute('href') === location.hash) navigate(true)
+})
 navigate()
 void load().catch((e) => {
   $('notice').textContent = e.message
@@ -179,18 +187,18 @@ function buildSectionMenu() {
     link.href = `#datacenter/${panel.id}`
     return link
   }))
-  $('section-jump').replaceChildren(...panels.map(panel => new Option(panel.dataset.sectionLabel, `#datacenter/${panel.id}`)))
 }
 function navigate(focus = false) {
-  const links = [...document.querySelectorAll('nav[aria-label="Products"] a')]
+  const links = [...document.querySelectorAll('#workspace-links > a, #datacenter-workspace > summary')]
   const hash = location.hash || '#dashboard'
   const key = hash.split('/')[0]
-  const selected = links.find(link => link.getAttribute('href') === key) ?? links[0]
+  const destination = link => link.tagName === 'SUMMARY' ? '#datacenter' : link.getAttribute('href')
+  const selected = links.find(link => destination(link) === key) ?? links[0]
   for (const link of links) {
-    if (link === selected) link.setAttribute('aria-current', 'page')
+    if (link === selected) link.setAttribute('aria-current', link.tagName === 'SUMMARY' ? 'true' : 'page')
     else link.removeAttribute('aria-current')
   }
-  const module = selected.getAttribute('href')
+  const module = destination(selected)
   const isDataCenter = module === '#datacenter'
   const panels = [...document.querySelectorAll('.workspace-panel')]
   const section = panels.find(panel => panel.id === hash.split('/')[1] && !panel.hidden) ?? $('system')
@@ -199,16 +207,21 @@ function navigate(focus = false) {
     if (link.getAttribute('href') === `#datacenter/${section.id}`) link.setAttribute('aria-current', 'page')
     else link.removeAttribute('aria-current')
   }
-  $('section-jump').value = `#datacenter/${section.id}`
   $('module-title').textContent = isDataCenter ? `DataCenter · ${section.dataset.sectionLabel}` : selected.textContent
   $('dashboard').hidden = !state || module !== '#dashboard'
   $('content').hidden = !state || !isDataCenter
-  $('section-menu').hidden = !state || !isDataCenter
-  $('section-toolbar').hidden = !state || !isDataCenter
+  $('section-menu').hidden = !state
+  $('datacenter-workspace').open = isDataCenter
   $('placeholder').hidden = module === '#dashboard' || isDataCenter
   if (focus) {
-    $('module-title').focus({ preventScroll: true })
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    if (narrowNavigation.matches) $('workspace-menu').open = false
+    const heading = isDataCenter ? section.querySelector('h2') : $('module-title')
+    if (heading) {
+      heading.tabIndex = -1
+      heading.focus({ preventScroll: true })
+    }
+    if (isDataCenter) section.scrollIntoView({ block: 'start', behavior: 'instant' })
+    else window.scrollTo({ top: 0, behavior: 'instant' })
   }
 }
 function applyCapabilities() {
