@@ -83,6 +83,7 @@ const server = createServer((req, res) => {
     '/admin.js': 'admin.js',
     '/community.js': 'community.js',
     '/records.js': 'records.js',
+    '/users.js': 'users.js',
     '/billing.js': 'billing.js',
     '/inventory.js': 'inventory.js',
     '/deep-dives.js': 'deep-dives.js',
@@ -256,13 +257,15 @@ try {
                 name: 'Community member',
                 status: 'active',
                 emailVerified: 1,
+                email: 'member@example.test',
+                last_login_at: null,
                 comment_count: 1,
                 createdAt: Date.now(),
               },
             ]
           : [comment]
     return route.fulfill({
-      json: { items, next: null, canModerate: fixture.role === 'owner' },
+      json: { items, next: null, total: items.length, canViewEmails: ['owner', 'admin'].includes(fixture.role), canModerate: fixture.role === 'owner' },
     })
   })
   let saved

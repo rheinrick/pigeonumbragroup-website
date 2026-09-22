@@ -6,6 +6,7 @@ import { setupInventory } from './inventory.js'
 import { setupDeepDives } from './deep-dives.js'
 import { setupBilling } from './billing.js'
 import { setupCommunity } from './community.js'
+import { setupUsers } from './users.js'
 let state
 const $ = (id) => document.getElementById(id)
 const text = (tag, value) => {
@@ -91,6 +92,7 @@ async function load() {
   $('contacts').replaceChildren(state.contacts?.length ? contacts.wrap : text('p', 'No submissions yet.'))
   applyCapabilities()
   setupCommunity(state)
+  setupUsers(state)
   setupBilling(state)
   setupDeepDives(state)
   setupEngagement(state)

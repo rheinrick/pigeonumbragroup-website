@@ -160,6 +160,25 @@
           <section class="workspace-panel" data-section-label="Operations" id="operations" hidden></section>
           <section class="workspace-panel" data-section-label="Engagement" id="engagement" hidden></section>
           <section class="workspace-panel" data-section-label="Billing" id="billing" hidden></section>
+          <section id="users" class="workspace-panel" data-section-label="Registered users" hidden>
+            <h2>Registered users</h2>
+            <p>Shared accounts for DataCenterData and DataCenterDread. Display names are chosen by members and may not be unique. Email addresses are visible only to owners and admins.</p>
+            <form id="users-search" class="users-filters">
+              <label>Search name, email or account ID<input id="users-query" type="search" maxlength="100" /></label>
+              <label>Account status<select id="users-status">
+                <option value="">All statuses</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+                <option value="banned">Banned</option>
+                <option value="deleted">Deleted</option>
+              </select></label>
+              <button type="submit">Search users</button>
+              <button id="users-reset" type="button" class="record-toggle">Clear filters</button>
+            </form>
+            <p id="users-notice" role="status" aria-live="polite"></p>
+            <div id="users-results"></div>
+            <button id="users-more" type="button" hidden>Load more users</button>
+          </section>
           <section class="workspace-panel" data-section-label="Community" id="community" hidden>
             <h2>Community</h2>
             <p>

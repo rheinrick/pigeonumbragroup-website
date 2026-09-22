@@ -368,3 +368,11 @@ main { padding-top: 24px; }
   .record-table .record-detail > td { width: 100%; }
   #community .record-detail form { padding: 12px; }
 }
+
+.users-filters { display: grid; grid-template-columns: minmax(180px, 2fr) minmax(140px, 1fr) auto auto; align-items: end; gap: 12px; }
+.users-filters label { margin-bottom: 0; font-size: 13px; }
+.user-details { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 10px 18px; margin: 0; }
+.user-details dt { color: #52675d; font-weight: 600; }
+.user-details dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 900px) { .users-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) { #users .record-table td:nth-child(2) { grid-column: 1 / -1; } .users-filters, .user-details { grid-template-columns: minmax(0, 1fr); } .user-details dd { margin-bottom: 8px; } }

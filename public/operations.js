@@ -49,6 +49,11 @@ export function setupOperations(state) {
           `${d.product.facilities} reviewed facilities · ${d.product.organizations} organizations · ${d.product.reports} generated reports · ${d.product.inventory}`,
         ),
       )
+      const users = el('a', 'View registered users →')
+      users.href = '#datacenter/users'
+      const directoryLink = el('p', '')
+      directoryLink.append(users)
+      box.append(directoryLink)
       const refresh = el('button', 'Refresh operations')
       refresh.onclick = () => void load()
       const check = el(
