@@ -72,3 +72,14 @@ test('cross-origin mutations are rejected before delegation', async () => {
     403,
   )
 })
+
+test('intelligence admin uses the existing verified proxy and rejects unknown operations',async()=>{
+ const seen=[];const env={DATACENTER:{fetch:async req=>{seen.push(new URL(req.url).pathname);return Response.json({reviewer:'fixture@example.test',role:'owner'})}}};
+ const req=path=>new Request('https://admin.pigeonumbragroup.com/api/admin/intelligence/'+path,{headers:{'Cf-Access-Jwt-Assertion':'signed-fixture'}});
+ assert.equal((await worker.fetch(req('state'),env)).status,200);
+ assert.deepEqual(seen,['/api/admin/session','/api/admin/intelligence/state']);
+ assert.equal((await worker.fetch(req('rollback'),env)).status,200);
+ assert.equal((await worker.fetch(req('delete-everything'),env)).status,404);
+ env.DATACENTER.fetch=async()=>new Response('Denied',{status:403});
+ assert.equal((await worker.fetch(req('state'),env)).status,403);
+})

@@ -1,3 +1,4 @@
+import { setupIntelligence } from './intelligence.js'
 import { recordTable, expandableRow, preview, displayDate } from './records.js'
 import {setupOperations} from './operations.js'
 import { setupEngagement } from './engagement.js'
@@ -97,6 +98,7 @@ async function load() {
   setupDeepDives(state)
   setupEngagement(state)
   setupOperations(state)
+  setupIntelligence(state)
   setupParticipation(state)
   setupInventory()
   buildSectionMenu()

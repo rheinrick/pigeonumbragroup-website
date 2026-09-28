@@ -1,0 +1,47 @@
+import {recordTable,recordRow,expandableRow,displayDate} from './records.js'
+const node=(tag,value='')=>{const el=document.createElement(tag);el.textContent=value;return el}
+const field=(form,label,value,type='text')=>{const wrap=node('label',label+' '),input=document.createElement(type==='textarea'?'textarea':'input');if(type!=='textarea')input.type=type;input.value=value??'';wrap.append(input);form.append(wrap);return input}
+export function setupIntelligence(account) {
+  const box=document.getElementById('intelligence');if(!box)return
+  box.hidden=!['owner','admin','readonly'].includes(account.role);if(box.hidden)return
+  const notice=node('p');notice.setAttribute('role','status')
+  async function request(path,payload){const r=await fetch('/api/admin/intelligence/'+path,{cache:'no-store',...(payload?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}:{})});const d=await r.json();if(!r.ok)throw Error(d.error||'Infrastructure service unavailable');return d}
+  async function save(path,payload){try{await request(path,payload);await load();notice.textContent='Saved. The catalog and run status have been refreshed.'}catch(e){notice.textContent=e.message}}
+  async function load(){try{
+    const state=await request('state')
+    box.replaceChildren(node('h2','Infrastructure intelligence'),node('p','Domain policy, source coverage and immutable dataset publication. A staged snapshot is not publicly available until published and approved for an edition.'),notice)
+    const refresh=node('button','Refresh infrastructure');refresh.onclick=()=>void load();box.append(refresh)
+    const table=recordTable('Infrastructure sources',['Source','Domain','Tier','Availability','Coverage','Version','Details'])
+    for(const source of state.sources){
+      const detail=node('div'),version=source.currentVersion??state.versions.find(v=>v.id===source.current_version)
+      const metadata=node('dl')
+      for(const [label,value] of Object.entries({Agency:source.agency,Health:source.schedule?.health??'Unpublished',Records:version?.record_count??'Not published','Next scheduled update':source.schedule?.nextUpdate?displayDate(source.schedule.nextUpdate):'After first publication','Update method':source.schedule?.mode??'Not configured','Latest error':source.lastAttempt?.error??'None',Cadence:source.schedule?`${source.schedule.refreshDays} days; stale after ${source.schedule.staleDays} days`:source.cadence,Adapter:source.adapter??'Not implemented',License:version?.license??source.license,Period:version?.data_period??'Not ingested','Refresh status':source.freshness?.warning??'Not assessed','Last duration':source.durationMs==null?'Not measured':`${source.durationMs} ms`,Limitations:version?.limitations??source.limitations,'Last successful ingestion':displayDate(source.lastSuccess?.finished_at),'Last attempt':displayDate(source.lastAttempt?.started_at)}))metadata.append(node('dt',label),node('dd',String(value)))
+      const link=node('a','Open source');link.href=source.url;link.target='_blank';link.rel='noreferrer';detail.append(metadata,link)
+      if(state.canWrite){
+        const form=node('form'),tier=node('select');tier.setAttribute('aria-label',source.name+' minimum tier');for(const t of ['free','pro','intelligence'])tier.append(new Option(t,t));tier.value=source.minimum_tier;form.append(tier)
+        const enabled=field(form,'Enabled',null,'checkbox');enabled.checked=!!source.enabled
+        const visible=field(form,'Show on map',null,'checkbox');visible.checked=!!source.map_visible
+        const editions=field(form,'Approved editions (main,dread,good)',JSON.parse(source.editions).join(','))
+        const reason=field(form,'Reason','');reason.required=true;reason.minLength=10
+        form.append(node('button','Save source policy'));form.onsubmit=e=>{e.preventDefault();if(!enabled.checked&&!confirm('Disable this source for all selected editions?'))return;void save('configure',{sourceId:source.id,minimumTier:tier.value,enabled:enabled.checked,mapVisible:visible.checked,editions:editions.value.split(',').map(v=>v.trim()).filter(Boolean),expectedRevision:source.revision,reason:reason.value})};detail.append(form)
+        if(['usgs-earthquakes','epa-sems'].includes(source.adapter)){const run=node('button','Fetch and stage source');run.onclick=async()=>{run.disabled=true;await save('run',{sourceId:source.id,reason:'Administrator requested a fresh validated source snapshot.'});run.disabled=false};detail.append(run)}
+      }
+      table.add(...expandableRow([source.name,source.domain,source.minimum_tier,source.enabled?'Enabled':'Disabled',version?.coverage??source.coverage,source.current_version??'No publication'],'Manage source',detail))
+    }box.append(table.wrap)
+    const capabilities=recordTable('Product capabilities',['Capability','Minimum tier'])
+    for(const [key,value] of Object.entries(state.capabilities??{}))capabilities.add(recordRow([key.replaceAll('_',' '),value.minimumTier]))
+    box.append(capabilities.wrap)
+    const versions=recordTable('Dataset versions',['Source','Version','Records','Period','State','Publish'])
+    for(const v of state.versions){const source=state.sources.find(s=>s.id===v.source_id),action=node('div');if(state.canWrite&&source&&source.current_version!==v.id){const form=node('form'),reason=field(form,'Publication reason','');reason.required=true;reason.minLength=10;const rollback=v.status==='published';form.append(node('button',rollback?'Restore previously published version':'Publish reviewed version'));form.onsubmit=e=>{e.preventDefault();if(!confirm(rollback?'Restore this previous version? Pending forward-version alerts will be skipped.':'Publish this version to the approved editions?'))return;void save(rollback?'rollback':'publish',{versionId:v.id,expectedRevision:source.revision,reason:reason.value,confirm:true})};action.append(form)}versions.add(recordRow([v.source_id,v.id,v.record_count,v.data_period,v.status,action]))}box.append(versions.wrap)
+    const runs=recordTable('Ingestion runs',['Source','Started','Duration','Status','Records','New','Changed','Retired','Error'])
+    for(const r of state.runs)runs.add(recordRow([r.source_id,displayDate(r.started_at),r.finished_at?`${r.finished_at-r.started_at} ms`:'Running',r.status,r.record_count??'Unavailable',r.added??'—',r.changed??'—',r.retired??'—',r.error??'']))
+    box.append(runs.wrap)
+    const domainTable=recordTable('Domain configuration',['Domain','Order','Enabled','Edit'])
+    for(const d of state.domains){const form=node('form');if(state.canWrite){const name=field(form,'Display name',d.display_name??d.name),description=field(form,'Description',d.description),ordering=field(form,'Order',d.ordering,'number'),enabled=field(form,'Enabled',null,'checkbox'),reason=field(form,'Reason','');enabled.checked=!!d.enabled;reason.required=true;reason.minLength=10;form.append(node('button','Save domain'));form.onsubmit=e=>{e.preventDefault();void save('domain',{id:d.id,name:name.value,description:description.value,ordering:Number(ordering.value),enabled:enabled.checked,expectedRevision:d.revision,reason:reason.value})}}domainTable.add(recordRow([d.display_name??d.name,d.ordering,d.enabled?'Yes':'No',form]))}box.append(domainTable.wrap)
+    if(state.canWrite){
+      const manual=node('details');manual.append(node('summary','Stage reviewed source records'));const form=node('form'),dataset=field(form,'Normalized dataset JSON','','textarea'),reason=field(form,'Review reason','');dataset.required=true;reason.required=true;reason.minLength=10;form.append(node('button','Validate and stage'));form.onsubmit=e=>{e.preventDefault();try{void save('stage',{dataset:JSON.parse(dataset.value),reason:reason.value})}catch{notice.textContent='Invalid JSON.'}};manual.append(node('p','For small reviewed snapshots. Large Pro geometry and federal bulk files use the offline staging command. Bulk EIA archives use the offline preparation/staging command; raw source URLs cannot be entered as fetch targets.'),form);box.append(manual)
+      const projects=node('details');projects.append(node('summary','Record project evidence and status'));const pf=node('form'),id=field(pf,'Stable project ID',''),name=field(pf,'Project name',''),status=field(pf,'Status','proposed'),lat=field(pf,'Latitude',''),lng=field(pf,'Longitude',''),jurisdiction=field(pf,'Jurisdiction',''),date=field(pf,'Evidence effective date','','date'),url=field(pf,'Primary source URL','','url'),doc=field(pf,'Source document title',''),revision=field(pf,'Expected revision (0 for new)',0,'number'),details=field(pf,'Documented fields JSON','{}','textarea'),projectReason=field(pf,'Evidence summary','');pf.append(node('button','Record historical event'));pf.onsubmit=e=>{e.preventDefault();try{void save('project',{projectId:id.value,name:name.value,status:status.value,latitude:Number(lat.value),longitude:Number(lng.value),jurisdiction:jurisdiction.value,effectiveDate:date.value,sourceUrl:url.value,sourceDocument:doc.value,expectedRevision:Number(revision.value),details:JSON.parse(details.value),reason:projectReason.value})}catch{notice.textContent='Invalid documented fields JSON.'}};projects.append(pf);for(const p of state.projects)projects.append(node('p',`${p.name} · ${p.id} · ${p.status} · revision ${p.revision}`));box.append(projects)
+    }
+  }catch(e){box.replaceChildren(node('h2','Infrastructure intelligence'),node('p',e.message))}}
+  void load()
+}

@@ -44,6 +44,7 @@ export default {
           !/^\/api\/admin\/participation\/(state|history|review|publish|unpublish|membership|revoke|export|retry-notification|supersede-staging)$/.test(
             url.pathname,
           ) &&
+          !/^\/api\/admin\/intelligence\/(state|configure|domain|run|stage|publish|rollback|project)$/.test(url.pathname) &&
           !/^\/api\/admin\/operations\/(state|control|commerce-check)$/.test(url.pathname) &&
           !/^\/api\/admin\/engagement\/(state|run|retry|acceptance)$/.test(url.pathname) &&
           !/^\/api\/admin\/billing\/(state|reconcile)$/.test(url.pathname) &&
