@@ -34,16 +34,26 @@ export default {
         }),
       )
       if (!auth.ok) return response('Administrator access denied.', 403)
-      if (
-        !auth.headers.get('Content-Type')?.includes('application/json') ||
-        typeof (await auth.json()).reviewer !== 'string'
-      )
+      if (!auth.headers.get('Content-Type')?.includes('application/json'))
         return response('The admin backend is not configured yet.', 503)
+      const identity = await auth.json()
+      if (typeof identity.reviewer !== 'string')
+        return response('The admin backend is not configured yet.', 503)
+      if (url.pathname === '/api/admin/dread' || url.pathname.startsWith('/api/admin/dread/')) {
+        const read = ['/api/admin/dread', '/api/admin/dread/state'].includes(url.pathname)
+        const write = ['/api/admin/dread/layer', '/api/admin/dread/domain', '/api/admin/dread/publish'].includes(url.pathname)
+        if (!read && !write) return response('Not found', 404)
+        if (!['owner', 'admin', 'readonly'].includes(identity.role))
+          return response('Dread administration permission required.', 403)
+        if (request.method !== (read ? 'GET' : 'POST')) return response('Method not allowed', 405)
+        if (write && identity.role === 'readonly') return response('Read-only role.', 403)
+      }
       if (url.pathname.startsWith('/api/admin/')) {
         if (
           !/^\/api\/admin\/participation\/(state|history|review|publish|unpublish|membership|revoke|export|retry-notification|supersede-staging)$/.test(
             url.pathname,
           ) &&
+          !/^\/api\/admin\/dread(?:\/(state|layer|domain|publish))?$/.test(url.pathname) &&
           !/^\/api\/admin\/intelligence\/(state|configure|domain|run|stage|publish|rollback|project)$/.test(url.pathname) &&
           !/^\/api\/admin\/operations\/(state|control|commerce-check)$/.test(url.pathname) &&
           !/^\/api\/admin\/engagement\/(state|run|retry|acceptance)$/.test(url.pathname) &&
