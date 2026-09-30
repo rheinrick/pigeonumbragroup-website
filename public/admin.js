@@ -1,3 +1,4 @@
+import { setupDread } from './dread.js'
 import { setupIntelligence } from './intelligence.js'
 import { recordTable, expandableRow, preview, displayDate } from './records.js'
 import {setupOperations} from './operations.js'
@@ -99,6 +100,7 @@ async function load() {
   setupEngagement(state)
   setupOperations(state)
   setupIntelligence(state)
+  setupDread(state)
   setupParticipation(state)
   setupInventory()
   buildSectionMenu()

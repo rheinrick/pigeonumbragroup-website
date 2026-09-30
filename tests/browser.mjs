@@ -81,6 +81,8 @@ const server = createServer((req, res) => {
   const files = {
     '/': 'index.html',
     '/admin.js': 'admin.js',
+    '/intelligence.js': 'intelligence.js',
+    '/dread.js': 'dread.js',
     '/community.js': 'community.js',
     '/records.js': 'records.js',
     '/users.js': 'users.js',
@@ -88,6 +90,8 @@ const server = createServer((req, res) => {
     '/inventory.js': 'inventory.js',
     '/deep-dives.js': 'deep-dives.js',
     '/participation.js':'participation.js',
+    '/operations.js': 'operations.js',
+    '/engagement.js': 'engagement.js',
     '/admin.css': 'admin.css',
   }
   const file = files[req.url]
@@ -117,6 +121,8 @@ try {
   })
   const errors = []
   page.on('pageerror', (error) => errors.push(error.message))
+  await page.route('**/api/admin/dread/state', route=>route.fulfill({json:{gates:{public:{name:'Public Access',available:true},delta:{name:'Gate 1 // Delta Access',available:true},omega:{name:'Gate 2 // Omega Access',available:false}},domains:[],layers:[],versions:[],runs:[],canWrite:fixture.role!=='readonly'}}))
+  await page.route('**/api/admin/intelligence/state', route=>route.fulfill({json:{sources:[{id:'power-plants',name:'Power plant fixture',domain:'grid-power',minimum_tier:'free',enabled:1,map_visible:1,editions:'[]',revision:0,agency:'EIA',cadence:'Annual',url:'https://www.eia.gov/',coverage:'Fixture coverage',adapter:'eia-plants',durationMs:321,lastAttempt:{started_at:1790467200000},lastSuccess:{finished_at:1790467200321},freshness:{warning:'Historical snapshot; review source record dates before use'}}],domains:[],runs:[],versions:[],projects:[],canWrite:fixture.role!=='readonly'}}))
   await page.route('**/api/admin/billing/state', (route) =>
     route.fulfill({
       json: {
@@ -301,6 +307,7 @@ try {
     if (await page.locator('#datacenter-workspace').getAttribute('open') === null)
       await page.locator('#datacenter-workspace > summary').click()
     await page.locator(`#section-links a[href="#datacenter/${name}"]`).click()
+    await expect(page.locator(`#${name}`)).toBeVisible()
   }
   await section('deep-dives')
   await expect(page.locator('#deep-dives')).toContainText('deep-dive-fixture')
@@ -344,6 +351,7 @@ try {
   await page.getByText('Saved. The workspace has been refreshed.').waitFor()
   assert.equal(saved.expectedRevision, 0)
   assert.equal(saved.layerId, 'poverty')
+  await section('publication')
   await expect(
     page.getByRole('button', { name: 'Activate release', exact: true }),
   ).toBeDisabled()
@@ -434,6 +442,7 @@ try {
     fullPage: true,
   })
   await page.setViewportSize({ width: 390, height: 844 })
+  await expect(page.locator('#workspace-menu')).not.toHaveAttribute('open', '')
   assert.equal(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -448,6 +457,15 @@ try {
     path: 'test-results/admin-mobile.png',
     fullPage: true,
   })
+  await section('intelligence')
+  await expect(page.locator('#intelligence')).toContainText('Power plant fixture')
+  await page.locator('#intelligence').getByRole('button',{name:'Manage source'}).click()
+  await expect(page.locator('#intelligence')).toContainText('321 ms')
+  await expect(page.locator('#intelligence')).toContainText('Historical snapshot; review source record dates before use')
+  await expect(page.locator('#intelligence').getByRole('button',{name:'Save source policy'})).toBeVisible()
+  await section('dread')
+  await expect(page.locator('#dread')).toContainText('Gate 1 // Delta Access')
+  await expect(page.locator('#dread')).toContainText('Reserved · unavailable')
   fixture.role = 'readonly'
   await page.reload()
   await section('deep-dives')
@@ -464,14 +482,21 @@ try {
   await expect(inv.getByRole('button', { name: 'Record review' })).toHaveCount(
     0,
   )
+  await section('intelligence')
+  await expect(page.locator('#intelligence')).toContainText('Power plant fixture')
+  await expect(page.locator('#intelligence').getByRole('button',{name:'Save source policy'})).toHaveCount(0)
+  await section('dread')
+  await expect(page.locator('#dread')).toBeVisible()
+  await expect(page.locator('#dread form')).toHaveCount(0)
   fixture.role = 'editor'
   await page.reload()
   await expect(page.locator('#deep-dives')).toBeHidden()
   await expect(page.locator('#community')).toBeHidden()
+  await expect(page.locator('#dread')).toBeHidden()
   assert.equal(await page.locator('#section-links a[href="#datacenter/community"]').count(), 0)
   assert.deepEqual(errors, [])
   console.log(
-    'PASS: seven-module navigation, placeholders, capability gates after save, revision payload, missing provenance, escaped content, desktop/mobile layout; community moderation, report resolution, user suspension, thread/history, readonly and editor gates.',
+    'PASS: central console navigation including Dread, placeholders, capability gates after save, revision payload, missing provenance, escaped content, desktop/mobile layout; community moderation, report resolution, user suspension, thread/history, readonly and editor gates.',
   )
 } finally {
   await browser.close()
