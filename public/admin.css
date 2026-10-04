@@ -379,3 +379,10 @@ main { padding-top: 24px; }
   #datacenter-workspace > summary { display: list-item; }
   .workspace-panel { scroll-margin-top: 80px; }
 }
+
+#baby-horoscope .status-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr)); }
+#baby-horoscope article { padding:1.2rem; background:var(--surface,#fff); border:1px solid #d9dedc; border-radius:8px; }
+#baby-horoscope h3 { margin-top:1.4rem; }
+#baby-horoscope dt { font-weight:600; margin-top:.65rem; }
+#baby-horoscope dd { margin:0; overflow-wrap:anywhere; font-size:.9rem; }
+#baby-links li { margin:.6rem 0; }

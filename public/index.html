@@ -28,7 +28,7 @@
               </div>
             </details>
           <a href="#clinitype">CliniType</a>
-          <a href="#newborn-horoscope">Newborn Horoscope</a>
+          <a href="#baby-horoscope">Baby Horoscope</a>
           <a href="#hietool">HIETool</a>
           <a href="#heinrick">Heinrick</a>
           <a href="#pigeon-umbra-group">Pigeon Umbra Group</a>
@@ -43,11 +43,26 @@
         <section id="placeholder" hidden>
           <p>Administration module not yet activated.</p>
         </section>
+        <section id="baby-horoscope" hidden aria-labelledby="baby-heading">
+          <h2 id="baby-heading">Baby Horoscope operations</h2>
+          <p>Free, curated birth-sign and due-date stories. Browser-local profiles. Little Orbit collage and Ink Club art.</p>
+          <button id="baby-refresh" type="button">Check public release manifests</button>
+          <p id="baby-notice" role="status" aria-live="polite"></p>
+          <div id="baby-surfaces" class="status-grid"></div>
+          <h3>Release and acceptance</h3>
+          <p>Last engineering review: October 4, 2026. The current reviewed Baby release is <code>50a23cc</code>; the execution board records exact artifacts and test evidence. Live manifest results above may change independently.</p>
+          <p>Public beta remains labelled and unindexed. Manifest checks confirm public metadata; they do not certify every route, a provider deployment or a receiving social app.</p>
+          <p>Engineering checks include browser regression and Xcode iPhone Simulator Safari. Actual family feedback and third-party app observations belong to the beta feedback loop.</p>
+          <h3>Support and privacy</h3>
+          <p>Use the branded inboxes for support and privacy requests. Ask for browser, page, approximate time and steps. Do not request child names, exact dates, profiles, backups or personal cards. This console does not receive or store them.</p>
+          <ul id="baby-links"></ul>
+          <p>Owner: Pigeon Umbra Group LLC. Inbox review is a manual operator routine; no scheduled checks or notifications are configured by this module.</p>
+        </section>
         <section id="dashboard" hidden>
           <h2>Project overview</h2>
-          <p>DataCenter is the only activated administration module.</p>
+          <p>DataCenter administration and the read-only Baby Horoscope operations overview are available.</p>
           <div id="overview" class="status-grid"></div>
-          <a href="#datacenter">Open DataCenter administration →</a>
+          <a href="#datacenter">Open DataCenter administration →</a> · <a href="#baby-horoscope">Open Baby Horoscope operations →</a>
         </section>
         <div id="content" hidden>
           <section id="system" class="workspace-panel" data-section-label="Overview">

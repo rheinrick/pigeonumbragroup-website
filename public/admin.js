@@ -1,3 +1,4 @@
+import { setupBabyHoroscope } from './baby-horoscope.js'
 import { setupDread } from './dread.js'
 import { setupIntelligence } from './intelligence.js'
 import { recordTable, expandableRow, preview, displayDate } from './records.js'
@@ -181,6 +182,7 @@ $('section-links').addEventListener('click', (event) => {
 })
 navigate()
 void load().catch((e) => {
+  $('identity').textContent = 'DataCenter workspace unavailable. Other project checks remain independent.'
   $('notice').textContent = e.message
 })
 
@@ -194,7 +196,7 @@ function buildSectionMenu() {
 }
 function navigate(focus = false) {
   const links = [...document.querySelectorAll('#workspace-links > a, #datacenter-workspace > summary')]
-  const hash = location.hash || '#dashboard'
+  const hash = location.hash === '#newborn-horoscope' ? '#baby-horoscope' : location.hash || '#dashboard'
   const key = hash.split('/')[0]
   const destination = link => link.tagName === 'SUMMARY' ? '#datacenter' : link.getAttribute('href')
   const selected = links.find(link => destination(link) === key) ?? links[0]
@@ -216,7 +218,9 @@ function navigate(focus = false) {
   $('content').hidden = !state || !isDataCenter
   $('section-menu').hidden = !state
   $('datacenter-workspace').open = isDataCenter
-  $('placeholder').hidden = module === '#dashboard' || isDataCenter
+  $('placeholder').hidden = module === '#dashboard' || isDataCenter || module === '#baby-horoscope'
+  $('baby-horoscope').hidden = module !== '#baby-horoscope'
+  if (module === '#baby-horoscope') setupBabyHoroscope()
   if (focus) {
     if (narrowNavigation.matches) $('workspace-menu').open = false
     const heading = isDataCenter ? section.querySelector('h2') : $('module-title')

@@ -1,3 +1,4 @@
+import { babyOverview } from './baby-horoscope.js'
 const headers = {
   'Cache-Control': 'no-store',
   'X-Robots-Tag': 'noindex, nofollow',
@@ -39,6 +40,13 @@ export default {
       const identity = await auth.json()
       if (typeof identity.reviewer !== 'string')
         return response('The admin backend is not configured yet.', 503)
+      if (url.pathname === '/api/admin/baby-horoscope' || url.pathname.startsWith('/api/admin/baby-horoscope/')) {
+        if (url.pathname !== '/api/admin/baby-horoscope/overview') return response('Not found', 404)
+        if (!['owner', 'admin', 'readonly'].includes(identity.role)) return response('Baby Horoscope operations permission required.', 403)
+        if (request.method !== 'GET') return response('Method not allowed', 405)
+        if (url.search) return response('Query parameters are not supported.', 400)
+        return Response.json(await babyOverview(), { headers })
+      }
       if (url.pathname === '/api/admin/dread' || url.pathname.startsWith('/api/admin/dread/')) {
         const read = ['/api/admin/dread', '/api/admin/dread/state'].includes(url.pathname)
         const write = ['/api/admin/dread/layer', '/api/admin/dread/domain', '/api/admin/dread/publish'].includes(url.pathname)

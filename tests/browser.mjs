@@ -81,6 +81,7 @@ const server = createServer((req, res) => {
   const files = {
     '/': 'index.html',
     '/admin.js': 'admin.js',
+    '/baby-horoscope.js': 'baby-horoscope.js',
     '/intelligence.js': 'intelligence.js',
     '/dread.js': 'dread.js',
     '/community.js': 'community.js',
@@ -283,7 +284,6 @@ try {
   await page.getByText('Open DataCenter administration →').waitFor()
   for (const name of [
     'CliniType',
-    'Newborn Horoscope',
     'HIETool',
     'Heinrick',
     'Pigeon Umbra Group',

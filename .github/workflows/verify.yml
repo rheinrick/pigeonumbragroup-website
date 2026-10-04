@@ -1,0 +1,23 @@
+name: Verify Central Admin
+on:
+  push:
+    branches: ['codex/baby-horoscope-phase3']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser && npm run test:dread-browser && npm run test:baby-browser
+        env:
+          PLAYWRIGHT_CHANNEL: chromium
