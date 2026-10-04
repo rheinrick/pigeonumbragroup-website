@@ -31,7 +31,7 @@ test('owner/admin/readonly requests receive only fixed public facts and no auth 
   assert.equal(calls.length,12)
   for(const [url,init] of calls) {
    assert.ok(origins.some(origin=>url === origin+'/release.json' || url === origin+'/reading-manifest.json'))
-   assert.deepEqual(init.headers,{Accept:'application/json'});assert.equal(init.redirect,'error');assert.ok(init.signal)
+   assert.deepEqual(init.headers,{Accept:'application/json'});assert.equal(init.redirect,'manual');assert.ok(init.signal)
   }
  } finally {globalThis.fetch=previous}
 })

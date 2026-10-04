@@ -4,10 +4,11 @@ const signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio
 const maxBytes = 512 * 1024
 async function readJson(url, fetcher) {
   const result = await fetcher(url, {
-    method: 'GET', redirect: 'error', cache: 'no-store',
+    method: 'GET', redirect: 'manual', cache: 'no-store',
     headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(8000),
   })
-  if (!result.ok || !result.headers.get('Content-Type')?.includes('application/json')) throw Error('Unavailable')
+  if (!result.ok) throw Error(`http-${result.status}`)
+  if (!result.headers.get('Content-Type')?.includes('application/json')) throw Error('not-json')
   if (Number(result.headers.get('Content-Length')) > maxBytes) { await result.body?.cancel(); throw Error('Oversized') }
   const reader = result.body?.getReader()
   if (!reader) throw Error('Missing body')
@@ -52,10 +53,21 @@ async function observe(origin, fetcher) {
   const result = {origin, status:release.status === 'fulfilled' && catalog.status === 'fulfilled' ? 'observed' : 'unavailable',
     release:release.status === 'fulfilled' ? release.value : null,
     catalog:catalog.status === 'fulfilled' ? catalog.value : null}
-  if (result.status !== 'observed') result.message = 'One or more public manifests could not be verified. Retry or inspect the public site.'
+  if (result.status !== 'observed') {
+    const code = outcome => {
+      if (outcome.status === 'fulfilled') return 'verified'
+      const error = outcome.reason
+      if (/^http-[1-5][0-9]{2}$/.test(error?.message)) return error.message
+      if (['not-json','Oversized','Missing body','Invalid release','Invalid catalog'].includes(error?.message)) return error.message.toLowerCase().replaceAll(' ','-')
+      if (error?.name === 'TimeoutError' || error?.name === 'AbortError') return 'timeout'
+      if (error?.name === 'SyntaxError') return 'invalid-json'
+      return 'fetch-unavailable'
+    }
+    result.message = `Public manifests could not be verified (release: ${code(release)}; content: ${code(catalog)}). Retry or inspect the public site.`
+  }
   return result
 }
-export async function babyOverview(fetcher = fetch) {
+export async function babyOverview(fetcher = (url, init) => fetch(url, init)) {
   return {schemaVersion:1, checkedAt:new Date().toISOString(),
     scope:'Public release manifests only; this is an on-demand observation, not continuous monitoring or a full journey test.',
     surfaces:await Promise.all(origins.map(origin=>observe(origin,fetcher)))}
