@@ -11,13 +11,15 @@ if (!token)
   throw Error(
     'Supply a Cloudflare API token with Access Read and Worker deploy permissions through the environment; never commit it.',
   )
+// An isolated checkout may use the exact reviewed backend config directly.
+const backendConfig = process.env.DCD_ADMIN_BACKEND_CONFIG || new URL(
+  '../../datacenterdata-website/wrangler.control.jsonc',
+  import.meta.url,
+)
 const configErrors = []
 const backend = parse(
   readFileSync(
-    new URL(
-      '../../datacenterdata-website/wrangler.control.jsonc',
-      import.meta.url,
-    ),
+    backendConfig,
     'utf8',
   ),
   configErrors,
