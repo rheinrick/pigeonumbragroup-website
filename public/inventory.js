@@ -1,3 +1,4 @@
+import { setupInventoryDiscovery } from './inventory-discovery.js'
 const el = (tag, value) => {
   const n = document.createElement(tag)
   if (value !== undefined) n.textContent = value
@@ -291,5 +292,6 @@ export function setupInventory() {
       notice.textContent = e.message
     }
   }
+  setupInventoryDiscovery(host)
   void load()
 }
