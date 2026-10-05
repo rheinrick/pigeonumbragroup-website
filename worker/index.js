@@ -56,6 +56,15 @@ export default {
         if (request.method !== (read ? 'GET' : 'POST')) return response('Method not allowed', 405)
         if (write && identity.role === 'readonly') return response('Read-only role.', 403)
       }
+      if (url.pathname.startsWith('/api/admin/inventory-discovery')) {
+        const read = ['/api/admin/inventory-discovery', '/api/admin/inventory-discovery-export'].includes(url.pathname)
+        const write = ['/api/admin/inventory-discovery-review', '/api/admin/inventory-discovery-import'].includes(url.pathname)
+        if (!read && !write) return response('Not found', 404)
+        if (!['owner', 'admin', 'readonly'].includes(identity.role))
+          return response('Inventory discovery permission required.', 403)
+        if (request.method !== (read ? 'GET' : 'POST')) return response('Method not allowed', 405)
+        if (write && identity.role === 'readonly') return response('Read-only role.', 403)
+      }
       if (url.pathname.startsWith('/api/admin/')) {
         if (
           !/^\/api\/admin\/participation\/(state|history|review|publish|unpublish|membership|revoke|export|retry-notification|supersede-staging)$/.test(
@@ -72,6 +81,10 @@ export default {
           ![
             '/api/admin/deep-dives',
             '/api/admin/inventory',
+            '/api/admin/inventory-discovery',
+            '/api/admin/inventory-discovery-review',
+            '/api/admin/inventory-discovery-import',
+            '/api/admin/inventory-discovery-export',
             '/api/admin/inventory-review',
             '/api/admin/inventory-export',
             '/api/admin/state',

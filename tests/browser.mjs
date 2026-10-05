@@ -89,6 +89,7 @@ const server = createServer((req, res) => {
     '/users.js': 'users.js',
     '/billing.js': 'billing.js',
     '/inventory.js': 'inventory.js',
+    '/inventory-discovery.js': 'inventory-discovery.js',
     '/deep-dives.js': 'deep-dives.js',
     '/participation.js':'participation.js',
     '/operations.js': 'operations.js',
@@ -201,6 +202,7 @@ try {
   }
   await page.route('**/api/admin/inventory**', async (route) => {
     const path = new URL(route.request().url()).pathname
+    if (path.includes('inventory-discovery')) return route.fulfill({json:{revision:0,release:'inventory-fixture',canReview:fixture.role!=='readonly',canImport:fixture.role==='owner',batch:null,latestAttempt:null,total:0,page:0,pageSize:30,counts:{needs_review:0,approve:0,defer:0,reject:0},rows:[]}})
     if (path.endsWith('inventory-review')) {
       const value = route.request().postDataJSON()
       inventoryActions.push(value)
@@ -409,6 +411,7 @@ try {
   await section('inventory')
   const inv = page.locator('#inventory')
   await expect(inv).toContainText('1 discovery candidates')
+  await expect(inv.locator('#inventory-discovery')).toContainText('The scheduled scan is not yet verified here.')
   await inv
     .getByText('Inventory fixture · needs_review · low', { exact: true })
     .click()
@@ -419,7 +422,7 @@ try {
     .getByLabel('Review reason', { exact: true })
     .fill('Keep deferred until an operator source confirms this identity.')
   await inv.getByRole('button', { name: 'Record review', exact: true }).click()
-  await expect(inv.getByRole('status')).toContainText(
+  await expect(inv.getByRole('status').last()).toContainText(
     'Public inventory remains unchanged',
   )
   assert.equal(inventoryActions[0].expectedRevision, 0)

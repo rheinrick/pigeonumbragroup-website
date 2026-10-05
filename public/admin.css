@@ -386,3 +386,56 @@ main { padding-top: 24px; }
 #baby-horoscope dt { font-weight:600; margin-top:.65rem; }
 #baby-horoscope dd { margin:0; overflow-wrap:anywhere; font-size:.9rem; }
 #baby-links li { margin:.6rem 0; }
+
+/* Additive weekly discovery review inbox. */
+.inventory-discovery {
+  border-bottom: 2px solid #d6ded6;
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+  min-width: 0;
+}
+.inventory-discovery h3 { font-size: 22px; margin: 0 0 12px; }
+.inventory-discovery h4 { margin: 20px 0 8px; }
+.discovery-summary, .discovery-notice:not(:empty) {
+  background: #f0f4ed;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 16px 0;
+}
+.discovery-notice:not(:empty) { background: #e5eee1; }
+.discovery-summary p { margin: 8px 0; }
+.discovery-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+  margin: 20px 0;
+}
+.discovery-filters label { margin: 0; }
+.discovery-filters button { justify-self: start; }
+.discovery-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; align-items: flex-start; }
+.discovery-import { flex-basis: 100%; }
+.discovery-import form { margin-top: 16px; }
+.discovery-card {
+  border: 1px solid #d6ded6;
+  border-radius: 8px;
+  margin: 16px 0;
+  padding: 16px;
+  min-width: 0;
+}
+.discovery-card > summary { font-weight: 700; cursor: pointer; }
+.inventory-discovery p, .inventory-discovery summary, .inventory-discovery pre, .inventory-discovery td { overflow-wrap: anywhere; }
+.inventory-discovery pre { white-space: pre-wrap; max-width: 100%; }
+.discovery-diff { overflow-x: auto; max-width: 100%; }
+.discovery-diff table { min-width: 420px; table-layout: fixed; }
+.discovery-diff td { white-space: normal; vertical-align: top; }
+.discovery-diff th { width: 33.33%; }
+.discovery-review { border-top: 1px solid #d6ded6; padding-top: 20px; margin-top: 20px; }
+.discovery-citation { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; border: 1px solid #d6ded6; padding: 12px; border-radius: 6px; margin: 12px 0; }
+.discovery-citation label { margin: 0; }
+.discovery-citation button { justify-self: start; grid-column: 1 / -1; }
+.discovery-review > button { margin: 0 10px 16px 0; }
+@media (max-width: 750px) {
+  .discovery-filters, .discovery-citation { grid-template-columns: minmax(0, 1fr); }
+  .discovery-citation button { grid-column: auto; }
+  .discovery-card { padding: 12px; }
+}
