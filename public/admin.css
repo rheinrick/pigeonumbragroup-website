@@ -439,3 +439,9 @@ main { padding-top: 24px; }
   .discovery-citation button { grid-column: auto; }
   .discovery-card { padding: 12px; }
 }
+#baby-editorial-days { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 1rem; }
+#baby-editorial-days article, #baby-candidate-entries article { padding: 1rem; border: 1px solid var(--border, #ccc); margin-block: 1rem; }
+#baby-candidate-summary { overflow-wrap: anywhere; }
+#baby-review-form label { display: block; margin-block: 1rem; }
+#baby-review-reason { width: min(100%, 650px); min-height: 100px; }
+#baby-candidate-entries { max-width: 70ch; }

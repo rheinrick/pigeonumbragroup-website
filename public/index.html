@@ -49,8 +49,27 @@
           <button id="baby-refresh" type="button">Check public release manifests</button>
           <p id="baby-notice" role="status" aria-live="polite"></p>
           <div id="baby-surfaces" class="status-grid"></div>
+          <h3>Daily reading review</h3>
+          <p>Assisted drafts stay private until an editor reads all 24 sign and stage readings and records a decision. Profiles, child dates and billing data are not part of this queue.</p>
+          <label for="baby-editorial-target">Environment</label>
+          <select id="baby-editorial-target"><option value="beta">Public beta</option><option value="staging">Staging</option></select>
+          <button id="baby-editorial-refresh" type="button">Check reading coverage</button>
+          <p id="baby-editorial-notice" role="status" aria-live="polite"></p>
+          <div id="baby-editorial-days"></div>
+          <section id="baby-candidate" hidden aria-labelledby="baby-candidate-heading">
+            <h4 id="baby-candidate-heading" tabindex="-1">Draft review</h4>
+            <p id="baby-candidate-summary"></p>
+            <div id="baby-candidate-entries"></div>
+            <form id="baby-review-form">
+              <label><input id="baby-reviewed" type="checkbox" required> I have read all 24 readings for age-appropriate language, sign traits, dated substance and repetition.</label>
+              <label for="baby-review-reason">Editorial reason (120 characters maximum)</label>
+              <textarea id="baby-review-reason" maxlength="120" required></textarea>
+              <button id="baby-approve" type="submit" value="approved">Approve this exact draft</button>
+              <button id="baby-reject" type="submit" value="rejected">Reject this exact draft</button>
+            </form>
+          </section>
           <h3>Release and acceptance</h3>
-          <p>Last engineering review: October 4, 2026. The current reviewed Baby release is <code>50a23cc</code>; the execution board records exact artifacts and test evidence. Live manifest results above may change independently.</p>
+          <p>The execution board records accepted artifacts and test evidence. Live release and reading coverage results above are observations at the time of the check.</p>
           <p>Public beta remains labelled and unindexed. Manifest checks confirm public metadata; they do not certify every route, a provider deployment or a receiving social app.</p>
           <p>Engineering checks include browser regression and Xcode iPhone Simulator Safari. Actual family feedback and third-party app observations belong to the beta feedback loop.</p>
           <h3>Support and privacy</h3>

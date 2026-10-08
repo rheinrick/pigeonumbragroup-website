@@ -1,3 +1,4 @@
+import { setupBabyEditorial } from './baby-editorial.js'
 const $ = id => document.getElementById(id)
 const node = (tag,value) => {const item=document.createElement(tag); item.textContent=value; return item}
 let started = false
@@ -45,6 +46,7 @@ async function check() {
 export function setupBabyHoroscope() {
   if (started) return
   started = true
+  setupBabyEditorial()
   $('baby-links').replaceChildren(...links.map(([label,url])=>{
     const item=node('li',''); const link=node('a',label); link.href=url; link.rel='noreferrer'; item.append(link); return item
   }))

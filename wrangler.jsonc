@@ -11,7 +11,11 @@
     "binding": "ASSETS",
     "run_worker_first": true,
   },
-  "services": [{ "binding": "DATACENTER", "service": "datacenterdata-control" }],
+  "services": [
+    { "binding": "DATACENTER", "service": "datacenterdata-control" },
+    { "binding": "BABY_BETA", "service": "baby-horoscope" },
+    { "binding": "BABY_STAGING", "service": "baby-horoscope-staging" }
+  ],
   "routes": [
     { "pattern": "admin.pigeonumbragroup.com", "custom_domain": true },
   ],

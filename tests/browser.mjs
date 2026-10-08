@@ -82,6 +82,7 @@ const server = createServer((req, res) => {
     '/': 'index.html',
     '/admin.js': 'admin.js',
     '/baby-horoscope.js': 'baby-horoscope.js',
+    '/baby-editorial.js': 'baby-editorial.js',
     '/intelligence.js': 'intelligence.js',
     '/dread.js': 'dread.js',
     '/community.js': 'community.js',
