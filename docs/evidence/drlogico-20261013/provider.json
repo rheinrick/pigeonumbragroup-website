@@ -1,0 +1,33 @@
+{
+  "codeSha256": "846fd121be5ff873485a6d05551d85fb5b5896bb800edb89f6d078ab1884c322",
+  "bindings": [
+    {
+      "name": "ASSETS",
+      "type": "assets"
+    },
+    {
+      "name": "BABY_BETA",
+      "type": "service",
+      "service": "baby-horoscope"
+    },
+    {
+      "name": "BABY_EDITORIAL_OPS_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "BABY_STAGING",
+      "type": "service",
+      "service": "baby-horoscope-staging"
+    },
+    {
+      "name": "DATACENTER",
+      "type": "service",
+      "service": "datacenterdata-control"
+    },
+    {
+      "name": "DRLOGICO",
+      "type": "service",
+      "service": "drlogico"
+    }
+  ]
+}

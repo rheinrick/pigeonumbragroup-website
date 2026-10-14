@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><meta name="robots" content="noindex,nofollow" /><title>DrLoGiCo blog · PUG Administration</title><link rel="stylesheet" href="/admin.css" /><link rel="stylesheet" href="/drlogico.css" /></head>
+<body>
+<header><span class="monogram">PUG</span><div><strong>Pigeon Umbra Group</strong><span class="subtle">Private administration · DrLoGiCo</span></div></header>
+<div class="layout"><aside><p class="eyebrow">WORKSPACES</p><nav aria-label="Products"><a href="/#dashboard">Dashboard</a><a href="/#datacenter">DataCenter</a><a href="/drlogico.html" aria-current="page">DrLoGiCo</a></nav><p><a href="https://drlogico.com/blog/" target="_blank" rel="noopener">View public blog ↗</a></p></aside>
+<main><p class="eyebrow">DRLOGICO / BLOG</p><h1>Posts</h1><p>Write a draft, preview it, then publish when you're ready. Categories and tags organize the public blog.</p><p id="blog-notice" role="status">Loading posts…</p>
+<section><div class="blog-toolbar"><h2>Your posts</h2><button id="new-post" type="button" disabled>New post</button><button id="reload-posts" type="button">Reload list</button></div><div id="post-list"></div><div class="blog-toolbar"><button id="prev-posts" type="button" disabled>Previous</button><span id="page-number"></span><button id="next-posts" type="button" disabled>Next</button></div></section>
+<section><h2 id="editor-title">New post</h2><p id="post-state">Draft — not public</p><form id="post-form"><fieldset id="post-fields" disabled>
+<label>Title<input name="title" id="post-title" maxlength="160" required /></label>
+<label>URL slug<input name="slug" id="post-slug" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" required /><small>Lowercase words separated by hyphens. Fixed after the first save so links keep working.</small></label>
+<label>Short description<textarea name="excerpt" id="post-excerpt" maxlength="400" rows="2"></textarea></label>
+<div class="blog-taxonomy"><label>Category<input name="category" id="post-category" maxlength="50" value="Notes" required list="known-categories" /></label><label>Tags<input name="tags" id="post-tags" placeholder="projects, experiments" /><small>Comma-separated; up to 10 tags, 40 characters each.</small></label></div><datalist id="known-categories"><option value="Notes"></option><option value="Projects"></option><option value="Experiments"></option></datalist>
+<label>Post body<textarea name="body" id="post-body" rows="18" maxlength="60000" required></textarea><small>Plain text. Separate paragraphs with a blank line. HTML is displayed as text.</small></label>
+<div class="blog-toolbar"><button type="submit" value="save" id="save-post">Save draft</button><button type="submit" value="publish" id="publish-post">Publish</button><button type="submit" value="unpublish" id="unpublish-post" disabled>Unpublish</button><button type="button" id="preview-post">Preview text</button><a id="view-post" hidden target="_blank" rel="noopener">View published post ↗</a></div>
+<p>Save draft keeps the currently published version unchanged. Publish makes these edits public. Unpublish takes the post offline and keeps your draft.</p>
+</fieldset></form></section>
+<section id="preview" hidden><p class="eyebrow">UNSAVED TEXT PREVIEW</p><h2 id="preview-title"></h2><p id="preview-meta"></p><p id="preview-excerpt"></p><div id="preview-body"></div></section>
+</main></div><script type="module" src="/drlogico.js"></script>
+</body></html>

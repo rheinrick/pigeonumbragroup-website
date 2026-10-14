@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/blog/blog-connection-test/",
+    "status": 404,
+    "testPostPublic": false
+  },
+  {
+    "path": "/blog/",
+    "status": 200,
+    "testPostPublic": false
+  },
+  {
+    "path": "/blog/?category=Notes&tag=connection-test",
+    "status": 200,
+    "testPostPublic": false
+  },
+  {
+    "path": "/",
+    "status": 200,
+    "testPostPublic": false
+  }
+]

@@ -66,6 +66,15 @@ export default {
         if (request.method !== (read ? 'GET' : 'POST')) return response('Method not allowed', 405)
         if (write && identity.role === 'readonly') return response('Read-only role.', 403)
       }
+      if (url.pathname === '/api/admin/drlogico/posts') {
+        if (!['GET', 'POST'].includes(request.method)) return response('Method not allowed', 405)
+        if (!env.DRLOGICO) return response('DrLoGiCo blog is not connected yet.', 503)
+        const result = await env.DRLOGICO.fetch(request)
+        return new Response(result.body, {
+          status: result.status,
+          headers: { ...Object.fromEntries(result.headers), ...headers },
+        })
+      }
       if (url.pathname.startsWith('/api/admin/')) {
         if (
           !/^\/api\/admin\/participation\/(state|history|review|publish|unpublish|membership|revoke|export|retry-notification|supersede-staging)$/.test(

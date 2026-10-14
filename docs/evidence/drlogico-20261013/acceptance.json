@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-13",
+  "timezone": "America/Phoenix",
+  "adminVersion": "93b560a6-8e81-4e06-8bec-82fa12e30f4c",
+  "baselineVersion": "a6f2fe2b-bce8-4f7f-af30-de398934ea42",
+  "baselineSource": "8723bddedd89860507ed3e4fd390b8f58f4e1b77",
+  "adminCodeSha256": "846fd121be5ff873485a6d05551d85fb5b5896bb800edb89f6d078ab1884c322",
+  "drlogicoVersionUnchanged": "d643f377-5ec6-4807-9e6b-c06d9600bea9",
+  "tests": {
+    "adminTestsPassed": 33,
+    "drlogicoTestsPassed": 6,
+    "syntaxChecksPassed": true,
+    "dryRunPassed": true,
+    "localBrowserLifecyclePassed": true,
+    "liveOwnerBrowserLifecyclePassed": true,
+    "dashboardLinkPassed": true,
+    "anonymousAdminDenied": true,
+    "unpublishedDraftStayedPrivate": true
+  },
+  "approvedTestPost": {
+    "slug": "blog-connection-test",
+    "finalRevision": 5,
+    "published": false,
+    "auditActions": [
+      "save",
+      "publish",
+      "save",
+      "publish",
+      "unpublish"
+    ]
+  },
+  "limitations": [
+    "User session used for agent-driven live acceptance; no claim that the owner manually authored the test.",
+    "Existing Access API listing discrepancy persists; release used fresh dashboard review with unchanged validator."
+  ]
+}

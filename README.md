@@ -1,6 +1,6 @@
 # Pigeon Umbra Group — central administration
 
-Phase **15 of 19**, branch `codex/phase-15-inventory-expansion`. Only the DataCenter module is implemented. Other application placeholders remain unactivated.
+Current combined console: DataCenter, Baby Horoscope operations/editorial review, and DrLoGiCo blog publishing. DrLoGiCo activation and live acceptance completed October 13, 2026; see [blog publishing](docs/drlogico-blog.md). The dated sections below retain the earlier DataCenter history.
 
 ## Current deployment boundary (2026-09-10)
 

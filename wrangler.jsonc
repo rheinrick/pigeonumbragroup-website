@@ -13,6 +13,7 @@
   },
   "services": [
     { "binding": "DATACENTER", "service": "datacenterdata-control" },
+    { "binding": "DRLOGICO", "service": "drlogico" },
     { "binding": "BABY_BETA", "service": "baby-horoscope" },
     { "binding": "BABY_STAGING", "service": "baby-horoscope-staging" }
   ],
