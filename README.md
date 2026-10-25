@@ -2,6 +2,8 @@
 
 Current combined console: DataCenter, Baby Horoscope operations/editorial review, and DrLoGiCo blog publishing. DrLoGiCo activation and live acceptance completed October 13, 2026; see [blog publishing](docs/drlogico-blog.md). The dated sections below retain the earlier DataCenter history.
 
+October 24 integration: the reviewed save/retry fixes, dependency patches and regression coverage are integrated into this combined checkout on `codex/admin-review-integration-20261024`, preserving its unfinished social work. All local checks passed; this integration has not been deployed. Start with the [review handoff](docs/autonomous-review-2026-10-24.md) for preservation evidence, validation, remaining findings and the next task.
+
 ## Current deployment boundary (2026-09-10)
 
 The console is deployed at `admin.pigeonumbragroup.com` behind Cloudflare Access. The sole configured owner remains `sudopug1337@datacenterdata.net`; JWT/issuer/audience/email checks protect assets and API calls. `DATACENTER` targets the private `datacenterdata-control` service with existing D1. Managed R2 publication and contact-inbox email import remain unavailable; public corrections still use email links.
@@ -25,6 +27,8 @@ See the sibling DataCenter [Phase 15 handoff](../datacenterdata-website/docs/pha
 ## Checks
 
 Node 24.19/npm. Run `npm ci`, `npm run check`, and `npm run test:browser` (install Playwright Chromium or supply `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`). Browser tests use clearly synthetic API fixtures, exercise all navigation, disabled capabilities after save, revision payloads, missing fields, escaped untrusted content and mobile layout. Screenshots are ignored under `test-results/`.
+
+Also run `npm run test:dread-browser`, `npm run test:baby-browser`, `npm run test:inventory-discovery-browser` and `npm run test:social-browser`. The verification workflow runs all five browser suites. Social recovery checks cover retained drafts, independent channel controls and saved/uncertain actions without automatic resubmission.
 
 `npm exec wrangler deploy -- --dry-run` bundles without publishing. `npm run deploy` requires `CLOUDFLARE_API_TOKEN` supplied securely in the environment. It reads the sibling backend configuration and checks live Access app, issuer/audience, sole owner allow policy, and absence of bypass/overlapping applications before deploying. The API token needs Access Read and Worker deployment permissions. Never remove the deployment gate to work around missing configuration.
 

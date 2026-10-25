@@ -18,6 +18,11 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run check
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:browser && npm run test:dread-browser && npm run test:baby-browser
+      - run: |
+          npm run test:browser
+          npm run test:dread-browser
+          npm run test:baby-browser
+          npm run test:inventory-discovery-browser
+          npm run test:social-browser
         env:
           PLAYWRIGHT_CHANNEL: chromium

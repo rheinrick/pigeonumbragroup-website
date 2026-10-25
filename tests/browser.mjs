@@ -81,6 +81,7 @@ const server = createServer((req, res) => {
   const files = {
     '/': 'index.html',
     '/admin.js': 'admin.js',
+    '/social.js': 'social.js',
     '/baby-horoscope.js': 'baby-horoscope.js',
     '/baby-editorial.js': 'baby-editorial.js',
     '/intelligence.js': 'intelligence.js',
@@ -123,7 +124,13 @@ try {
     viewport: { width: 1440, height: 1000 },
   })
   const errors = []
+  let failState = false, decisionStatus = 200, decisionRequests = 0, holdDecision
   page.on('pageerror', (error) => errors.push(error.message))
+  await page.route('**/api/admin/social/**', route => route.fulfill({ json: {
+    brand: { name: 'Synthetic channel', origin: 'https://example.test' },
+    channel: { paused: true, revision: 0, verified: false, initialized: true },
+    posts: [{ id: 'synthetic-social', kind: 'catalog', status: 'draft', current: true, revision: 0, attempts: 0, message: 'Saved synthetic social draft', link: 'https://example.test/' }],
+  } }))
   await page.route('**/api/admin/dread/state', route=>route.fulfill({json:{gates:{public:{name:'Public Access',available:true},delta:{name:'Gate 1 // Delta Access',available:true},omega:{name:'Gate 2 // Omega Access',available:false}},domains:[],layers:[],versions:[],runs:[],canWrite:fixture.role!=='readonly'}}))
   await page.route('**/api/admin/intelligence/state', route=>route.fulfill({json:{sources:[{id:'power-plants',name:'Power plant fixture',domain:'grid-power',minimum_tier:'free',enabled:1,map_visible:1,editions:'[]',revision:0,agency:'EIA',cadence:'Annual',url:'https://www.eia.gov/',coverage:'Fixture coverage',adapter:'eia-plants',durationMs:321,lastAttempt:{started_at:1790467200000},lastSuccess:{finished_at:1790467200321},freshness:{warning:'Historical snapshot; review source record dates before use'}}],domains:[],runs:[],versions:[],projects:[],canWrite:fixture.role!=='readonly'}}))
   await page.route('**/api/admin/billing/state', (route) =>
@@ -151,7 +158,7 @@ try {
     }),
   )
   await page.route('**/api/admin/state*', (route) =>
-    route.fulfill({ json: fixture }),
+    route.fulfill(failState ? { status: 503, json: { error: 'Synthetic refresh unavailable' } } : { json: fixture }),
   )
   await page.route('**/api/admin/deep-dives', (route) =>
     route.fulfill({ json: {
@@ -279,8 +286,12 @@ try {
     })
   })
   let saved
-  await page.route('**/api/admin/decision', (route) => {
+  await page.route('**/api/admin/decision', async (route) => {
+    decisionRequests++
     saved = route.request().postDataJSON()
+    if (holdDecision) await holdDecision
+    if (decisionStatus !== 200) return route.fulfill({ status: decisionStatus, json: { error: 'Synthetic save rejected' } })
+    fixture.revision++
     return route.fulfill({ json: { saved: true } })
   })
   await page.goto(`http://127.0.0.1:${server.address().port}/`)
@@ -354,6 +365,47 @@ try {
   await page.getByText('Saved. The workspace has been refreshed.').waitFor()
   assert.equal(saved.expectedRevision, 0)
   assert.equal(saved.layerId, 'poverty')
+  // A failed core save must not override a module's unsaved-preview approval gate.
+  await section('social')
+  const social = page.locator('#social > section').first()
+  await social.getByLabel('Post text', { exact: true }).fill('Unsaved synthetic social text')
+  await expect(social.getByRole('button', { name: 'Approve saved draft' })).toBeDisabled()
+  await section('layers')
+  decisionStatus = 409
+  await page.getByRole('button', { name: 'Save decision', exact: true }).click()
+  await expect(page.locator('#notice')).toContainText('Synthetic save rejected')
+  await section('social')
+  await expect(social.getByRole('button', { name: 'Approve saved draft' })).toBeDisabled()
+  decisionStatus = 200
+  await section('layers')
+  let finishDecision
+  holdDecision = new Promise(resolve => { finishDecision = resolve })
+  const beforeRequests = decisionRequests
+  failState = true
+  await page.getByRole('button', { name: 'Save decision', exact: true }).click()
+  await expect.poll(() => decisionRequests).toBe(beforeRequests + 1)
+  await expect(page.getByRole('button', { name: 'Save decision', exact: true })).toBeDisabled()
+  await page.locator('#decision-form').evaluate(form => {
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+  })
+  finishDecision(); holdDecision = null
+  await expect(page.locator('#notice')).toContainText('Saved, but the workspace could not refresh')
+  assert.equal(decisionRequests, beforeRequests + 1)
+  await expect(page.getByRole('button', { name: 'Save decision', exact: true })).toBeDisabled()
+  // Recovery reads state; it never repeats the acknowledged mutation.
+  mkdirSync('test-results', { recursive: true })
+  await page.screenshot({ path: 'test-results/admin-saved-refresh-failure.png', fullPage: true })
+  await page.getByRole('button', { name: 'Retry loading workspace' }).click()
+  await expect(page.locator('#notice')).toContainText('Could not load the admin workspace')
+  failState = false
+  await page.getByRole('button', { name: 'Retry loading workspace' }).click()
+  await expect(page.locator('#notice')).toContainText('Workspace refreshed')
+  assert.equal(decisionRequests, beforeRequests + 1)
+  await expect(page.getByRole('button', { name: 'Save decision', exact: true })).toBeEnabled()
+  await page.getByRole('button', { name: 'Save decision', exact: true }).click()
+  await expect(page.locator('#notice')).toHaveText('Saved. The workspace has been refreshed.')
+  assert.equal(saved.expectedRevision, 2)
   await section('publication')
   await expect(
     page.getByRole('button', { name: 'Activate release', exact: true }),
@@ -498,9 +550,15 @@ try {
   await expect(page.locator('#community')).toBeHidden()
   await expect(page.locator('#dread')).toBeHidden()
   assert.equal(await page.locator('#section-links a[href="#datacenter/community"]').count(), 0)
+  failState = true
+  await page.reload()
+  await expect(page.getByRole('button', { name: 'Retry loading workspace' })).toBeVisible()
+  failState = false
+  await page.getByRole('button', { name: 'Retry loading workspace' }).click()
+  await expect(page.locator('#notice')).toContainText('Workspace refreshed')
   assert.deepEqual(errors, [])
   console.log(
-    'PASS: central console navigation including Dread, placeholders, capability gates after save, revision payload, missing provenance, escaped content, desktop/mobile layout; community moderation, report resolution, user suspension, thread/history, readonly and editor gates.',
+    'PASS: central console navigation, scoped capability gates, duplicate-write guard, saved-refresh recovery, current revision reuse, initial-load retry, provenance, escaped content, desktop/mobile; community moderation, report resolution, user suspension, inventory and role gates.',
   )
 } finally {
   await browser.close()

@@ -1,6 +1,7 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
+import {fileURLToPath} from 'node:url'
 import {parse} from 'jsonc-parser'
 import {Miniflare,convertV4MiniflareOptions} from 'miniflare'
 // Exercise the actual workerd fetch implementation; Node mocks cannot catch
@@ -9,7 +10,7 @@ test('protected Baby endpoint performs public fetches inside the Workers runtime
  const config=parse(readFileSync(new URL('../wrangler.jsonc',import.meta.url),'utf8'),[],{allowTrailingComma:true})
  const calls=[], editorialCalls=[]
  const mf=new Miniflare(convertV4MiniflareOptions({telemetry:{enabled:false},workers:[{
-  name:'admin-fixture',modules:[{type:'ESModule',path:new URL('../worker/index.js',import.meta.url).pathname,contents:readFileSync(new URL('../worker/index.js',import.meta.url),'utf8')},{type:'ESModule',path:new URL('../worker/baby-horoscope.js',import.meta.url).pathname,contents:readFileSync(new URL('../worker/baby-horoscope.js',import.meta.url),'utf8')},{type:'ESModule',path:new URL('../worker/baby-editorial.js',import.meta.url).pathname,contents:readFileSync(new URL('../worker/baby-editorial.js',import.meta.url),'utf8')}],
+  name:'admin-fixture',modules:[{type:'ESModule',path:fileURLToPath(new URL('../worker/index.js',import.meta.url)),contents:readFileSync(new URL('../worker/index.js',import.meta.url),'utf8')},{type:'ESModule',path:fileURLToPath(new URL('../worker/baby-horoscope.js',import.meta.url)),contents:readFileSync(new URL('../worker/baby-horoscope.js',import.meta.url),'utf8')},{type:'ESModule',path:fileURLToPath(new URL('../worker/baby-editorial.js',import.meta.url)),contents:readFileSync(new URL('../worker/baby-editorial.js',import.meta.url),'utf8')}],
   compatibilityDate:config.compatibility_date,compatibilityFlags:config.compatibility_flags,
   bindings:{BABY_EDITORIAL_OPS_KEY:'private-runtime-fixture'},
   serviceBindings:{DATACENTER:()=>Response.json({reviewer:'fixture@example.test',role:'owner'}),BABY_BETA:request=>{
