@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-01T16:43:15.918Z",
+  "liveMatchesPreviousSource": true,
+  "rollbackVersions": [
+    {
+      "version_id": "5da97a88-eee5-47c9-bed3-394939005ff7",
+      "percentage": 100
+    }
+  ]
+}

@@ -38,7 +38,7 @@ test('archives and homepage assets retain the explicit public routing boundary',
     assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com/${version}/`, { method: 'POST' }), env)).status, 405)
   }
   assert.deepEqual(paths, ['/landing/v1/', '/landing/v1/', '/landing/v2/', '/landing/v2/'])
-  for (const path of ['/landing/home-v2.css', '/landing/atmosphere-v2.js', '/landing/media/pug-logo-v2.webp', '/landing/media/night-conservatory-v2.webp', '/landing/home-v3.css', '/landing/media/pug-logo-v3.webp', '/landing/media/reapers-flight-v3.webp', '/landing/media/reapers-sky-v3.webp'])
+  for (const path of ['/landing/home-v2.css', '/landing/atmosphere-v2.js', '/landing/media/pug-logo-v2.webp', '/landing/media/night-conservatory-v2.webp', '/landing/home-v3.css', '/landing/media/pug-logo-v3.webp', '/landing/media/reapers-flight-v3.webp', '/landing/media/reapers-sky-v3.webp', '/landing/media/pug-logo-v3-wide.webp'])
     assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com${path}`), env)).status, 200)
   for (const path of ['/v1/admin.js', '/v1/index.html', '/landing/v1/', '/v2/admin.js', '/v2/index.html', '/landing/v2/', '/v3/', '/landing/media/private.json'])
     assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com${path}`), env)).status, 404)

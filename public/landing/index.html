@@ -16,13 +16,16 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/landing/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="/landing/media/reapers-sky-v3.webp">
-  <link rel="stylesheet" href="/landing/home-v3.css">
+  <link rel="stylesheet" href="/landing/home-v3.css?v=3.1">
 </head>
 <body>
   <main class="hero">
     <div class="masthead">
       <h1 class="wordmark">
-        <img src="/landing/media/pug-logo-v3.webp" alt="Pigeon Umbra Group" width="1200" height="400" fetchpriority="high">
+        <picture>
+          <source media="(min-width: 601px)" srcset="/landing/media/pug-logo-v3-wide.webp">
+          <img src="/landing/media/pug-logo-v3.webp" alt="Pigeon Umbra Group" width="1200" height="400" fetchpriority="high">
+        </picture>
       </h1>
     </div>
     <div class="artwork">

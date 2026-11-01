@@ -100,6 +100,12 @@ body {
 .footer-nav a:hover { color: #fff; border-color: #fff; }
 .footer-nav a:focus-visible { outline: 1px solid #e2dcd3; outline-offset: 6px; }
 
+@media (min-width: 601px) {
+  .wordmark { width: 90vw; padding-top: clamp(8px, 1vw, 20px); }
+  .artwork { padding-top: 18%; background-position: center -7vw; }
+  .artwork::after { background: linear-gradient(180deg, transparent 66.1%, var(--ink) 97.46%); }
+}
+
 @media (max-width: 600px) {
   .hero { min-height: calc(100svh - 170px); }
   .wordmark { width: 76vw; }

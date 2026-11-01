@@ -1,0 +1,131 @@
+{
+  "mobileLayoutUnchanged": true,
+  "mobileBefore": {
+    "artwork": {
+      "bottom": 487.5,
+      "height": 487.5,
+      "left": 0,
+      "right": 390,
+      "top": 0,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    },
+    "footer": {
+      "bottom": 827,
+      "height": 153,
+      "left": 24,
+      "right": 366,
+      "top": 674,
+      "width": 342,
+      "x": 24,
+      "y": 674
+    },
+    "hero": {
+      "bottom": 674,
+      "height": 674,
+      "left": 0,
+      "right": 390,
+      "top": 0,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    },
+    "logo": {
+      "bottom": 114.796875,
+      "height": 98.796875,
+      "left": 46.796875,
+      "right": 343.1953125,
+      "top": 16,
+      "width": 296.3984375,
+      "x": 46.796875,
+      "y": 16
+    },
+    "source": "/landing/media/pug-logo-v3.webp",
+    "viewport": 390
+  },
+  "mobileAfter": {
+    "artwork": {
+      "bottom": 487.5,
+      "height": 487.5,
+      "left": 0,
+      "right": 390,
+      "top": 0,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    },
+    "footer": {
+      "bottom": 827,
+      "height": 153,
+      "left": 24,
+      "right": 366,
+      "top": 674,
+      "width": 342,
+      "x": 24,
+      "y": 674
+    },
+    "hero": {
+      "bottom": 674,
+      "height": 674,
+      "left": 0,
+      "right": 390,
+      "top": 0,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    },
+    "logo": {
+      "bottom": 114.796875,
+      "height": 98.796875,
+      "left": 46.796875,
+      "right": 343.1953125,
+      "top": 16,
+      "width": 296.3984375,
+      "x": 46.796875,
+      "y": 16
+    },
+    "source": "/landing/media/pug-logo-v3.webp",
+    "viewport": 390
+  },
+  "desktopAt1440": {
+    "artworkTop": 259.1953125,
+    "currentSource": "http://127.0.0.1:4339/landing/media/pug-logo-v3-wide.webp",
+    "logo": {
+      "bottom": 446.3984375,
+      "height": 432,
+      "left": 72,
+      "right": 1368,
+      "top": 14.3984375,
+      "width": 1296,
+      "x": 72,
+      "y": 14.3984375
+    },
+    "naturalWidth": 2172,
+    "overflow": false,
+    "width": 1440
+  },
+  "sizingChecks": [
+    {
+      "artworkTop": 150,
+      "logoWidth": 456,
+      "overflow": false,
+      "selectedLogo": "http://127.0.0.1:4339/landing/media/pug-logo-v3.webp",
+      "width": 600
+    },
+    {
+      "artworkTop": 108.1796875,
+      "logoWidth": 540.8984375,
+      "overflow": false,
+      "selectedLogo": "http://127.0.0.1:4339/landing/media/pug-logo-v3-wide.webp",
+      "width": 601
+    },
+    {
+      "artworkTop": 345.59375,
+      "logoWidth": 1728,
+      "overflow": false,
+      "selectedLogo": "http://127.0.0.1:4339/landing/media/pug-logo-v3-wide.webp",
+      "width": 1920
+    }
+  ]
+}

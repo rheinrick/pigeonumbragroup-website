@@ -9,6 +9,7 @@ const files = new Set([
   '/landing/media/pug-logo-v2.webp', '/landing/media/night-conservatory-v2.webp',
   '/landing/home-v3.css', '/landing/media/pug-logo-v3.webp', '/landing/media/reapers-flight-v3.webp',
   '/landing/media/reapers-sky-v3.webp',
+  '/landing/media/pug-logo-v3-wide.webp',
 ])
 const publicHosts = new Set(['pigeonumbragroup.com', 'www.pigeonumbragroup.com'])
 const localHosts = new Set(['localhost', '127.0.0.1', '[::1]'])
