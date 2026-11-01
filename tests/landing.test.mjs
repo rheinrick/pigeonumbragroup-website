@@ -19,26 +19,28 @@ test('public landing and its media do not call admin services', async () => {
   assert.equal((await worker.fetch(new Request('https://pigeonumbragroup.com/', {method:'HEAD'}), env)).body, null)
 })
 
-test('v1 archive and v2 assets retain the explicit public routing boundary', async () => {
+test('archives and homepage assets retain the explicit public routing boundary', async () => {
   const paths = []
   const env = { ASSETS: { fetch: async req => {
     paths.push(new URL(req.url).pathname)
     return new Response('public')
   } } }
-  for (const method of ['GET', 'HEAD']) {
-    const response = await worker.fetch(new Request('https://pigeonumbragroup.com/v1/', { method }), env)
-    assert.equal(response.status, 200)
-    assert.equal(response.headers.get('Cache-Control'), 'no-cache')
-    if (method === 'HEAD') assert.equal(response.body, null)
+  for (const version of ['v1', 'v2']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await worker.fetch(new Request(`https://pigeonumbragroup.com/${version}/`, { method }), env)
+      assert.equal(response.status, 200)
+      assert.equal(response.headers.get('Cache-Control'), 'no-cache')
+      if (method === 'HEAD') assert.equal(response.body, null)
+    }
+    const redirect = await worker.fetch(new Request(`https://pigeonumbragroup.com/${version}?from=footer`), env)
+    assert.equal(redirect.status, 308)
+    assert.equal(redirect.headers.get('Location'), `https://pigeonumbragroup.com/${version}/?from=footer`)
+    assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com/${version}/`, { method: 'POST' }), env)).status, 405)
   }
-  assert.deepEqual(paths, ['/landing/v1/', '/landing/v1/'])
-  const redirect = await worker.fetch(new Request('https://pigeonumbragroup.com/v1?from=footer'), env)
-  assert.equal(redirect.status, 308)
-  assert.equal(redirect.headers.get('Location'), 'https://pigeonumbragroup.com/v1/?from=footer')
-  assert.equal((await worker.fetch(new Request('https://pigeonumbragroup.com/v1/', { method: 'POST' }), env)).status, 405)
-  for (const path of ['/landing/home-v2.css', '/landing/atmosphere-v2.js', '/landing/media/pug-logo-v2.webp', '/landing/media/night-conservatory-v2.webp'])
+  assert.deepEqual(paths, ['/landing/v1/', '/landing/v1/', '/landing/v2/', '/landing/v2/'])
+  for (const path of ['/landing/home-v2.css', '/landing/atmosphere-v2.js', '/landing/media/pug-logo-v2.webp', '/landing/media/night-conservatory-v2.webp', '/landing/home-v3.css', '/landing/media/pug-logo-v3.webp', '/landing/media/reapers-flight-v3.webp', '/landing/media/reapers-sky-v3.webp'])
     assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com${path}`), env)).status, 200)
-  for (const path of ['/v1/admin.js', '/v1/index.html', '/landing/v1/', '/landing/media/private.json'])
+  for (const path of ['/v1/admin.js', '/v1/index.html', '/landing/v1/', '/v2/admin.js', '/v2/index.html', '/landing/v2/', '/v3/', '/landing/media/private.json'])
     assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com${path}`), env)).status, 404)
 })
 

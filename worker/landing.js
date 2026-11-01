@@ -7,6 +7,8 @@ const files = new Set([
   '/landing/media/social-v1.jpg',
   '/landing/home-v2.css', '/landing/atmosphere-v2.js',
   '/landing/media/pug-logo-v2.webp', '/landing/media/night-conservatory-v2.webp',
+  '/landing/home-v3.css', '/landing/media/pug-logo-v3.webp', '/landing/media/reapers-flight-v3.webp',
+  '/landing/media/reapers-sky-v3.webp',
 ])
 const publicHosts = new Set(['pigeonumbragroup.com', 'www.pigeonumbragroup.com'])
 const localHosts = new Set(['localhost', '127.0.0.1', '[::1]'])
@@ -16,16 +18,16 @@ export async function landing(request, env) {
   const local = localHosts.has(url.hostname)
   if (!publicHost && !local) return null
   const root = url.pathname === '/'
-  const archive = url.pathname === '/v1/' || url.pathname === '/v1'
+  const archive = /^\/v[12]\/?$/.test(url.pathname)
   if (!root && !archive && !files.has(url.pathname)) {
     if (local) return null // Local admin routes retain the existing auth path.
     return new Response('Not found', { status: 404 })
   }
   if (!['GET', 'HEAD'].includes(request.method))
     return new Response('Method not allowed', { status: 405, headers: { Allow: 'GET, HEAD' } })
-  if (url.pathname === '/v1') return Response.redirect(new URL('/v1/' + url.search, url), 308)
+  if (archive && !url.pathname.endsWith('/')) return Response.redirect(new URL(url.pathname + '/' + url.search, url), 308)
   if (root) url.pathname = '/landing/'
-  if (archive) url.pathname = '/landing/v1/'
+  if (archive) url.pathname = '/landing' + url.pathname
   const result = await env.ASSETS.fetch(new Request(url, request))
   const headers = new Headers(result.headers)
   headers.set('Content-Security-Policy', "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; media-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")

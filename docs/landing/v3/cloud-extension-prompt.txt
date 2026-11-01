@@ -1,0 +1,8 @@
+Use case: precise-object-edit / outpainting.
+Asset type: full-width website hero artwork, with a separate black logo to be overlaid later in HTML.
+Input image: the supplied square Reaper's Flight of Shadows illustration is the edit target.
+Primary request: extend ONLY the canvas upward by approximately 25 percent of the original image height, filling that new space with a seamless continuation of the original cloudy, grainy sky. Output a portrait 4:5 image, ideally 1536 x 1920. The original complete square composition occupies the lower 80 percent of the new canvas, anchored at the bottom and spanning the full width. The new upper 20 percent is added cloudy sky.
+Preserve the original reaper, scythe, all pigeons, cloak, ground, original framing and original grain texture as faithfully as possible. Do not enlarge, stretch, move, crop, reinterpret or redraw those subjects. Only add sky above the existing image.
+New sky: softly luminous light-to-medium silver-gray clouds, real billowing cloud texture and subtle film/ink grain matching the original; a somewhat lighter but still textured central area in the top 15 percent for a black wordmark. Natural broad tonal transitions, no abrupt seam, no flat white rectangle, no smooth artificial fade to pure white. Keep the existing top edge cloud pattern as the seamless connection to the added sky.
+Palette/style: original monochrome charcoal, black-and-white engraved/photocopy grain, no color.
+Do not add lettering, a logo, a border, new birds or new objects. Do not alter the lower composition or bottom edge.
