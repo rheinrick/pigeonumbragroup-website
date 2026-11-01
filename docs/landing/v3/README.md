@@ -1,6 +1,6 @@
 # Pigeon Umbra Group — version 3.0
 
-Prepared November 1, 2026 on `codex/pug-reaper-homepage-v3` in the public landing checkout. This version is saved locally and has not been committed, pushed or deployed.
+Prepared and published November 1, 2026 on `codex/pug-reaper-homepage-v3` in the public landing checkout. Version 3 is live at <https://pigeonumbragroup.com/> and <https://www.pigeonumbragroup.com/>. See the [release record](release.md) for the source commit, deployed version, rollback and live verification.
 
 The supplied black-metal wordmark sits over an extended cloudy sky. The artwork canvas is 25% taller than the original square, with additional clouds above the original reaper image. The flat header and fade to white have been removed. The original full-width illustration, its proportions and the lower fade to black are preserved. A small footer retains the company description and copyright, with links to versions 2.0 and 1.0. The new homepage needs no JavaScript or third-party resources.
 
@@ -25,6 +25,6 @@ The supplied black-metal wordmark sits over an extended cloudy sky. The artwork 
 - Cloud extension follow-up: browser inspection at 320, 390, 768, 1440 and 1920px verified the full-width artwork, proportional original image, transparent logo header, absent white overlay, and no horizontal overflow. No browser warning/error logs were recorded. All nine checks and the public build dry-run passed again.
 - [Current desktop preview](desktop-clouds.jpg), [current mobile preview](mobile-clouds.jpg), and [cloud layout measurements](cloud-layout-checks.json). The earlier full-width and initial previews remain alongside these for comparison.
 
-Physical-device and Safari testing, the complete older audio/browser suites, and production deployment were not performed. The original administration checkout was not changed.
+Physical-device and Safari testing and the complete older audio/browser suites were not performed. The original administration checkout was not changed. Production deployment and live HTTP/browser checks passed; see the [release record](release.md).
 
-To preview again, use Node 24 and run `npm run dev:landing` in this checkout. The deployment target for a future release is `pug-public` through `wrangler.public.jsonc`.
+To preview again, use Node 24 and run `npm run dev:landing` in this checkout. The public deployment target is `pug-public` through `wrangler.public.jsonc`.

@@ -1,0 +1,14 @@
+{
+  "observedAt": "2026-11-01T16:34:15.364Z",
+  "worker": "pug-public",
+  "sourceCommit": "f500df271a47f9181542dae2ccce4d2546e73a42",
+  "deploymentId": "bf8cc7e8-94fd-4e5e-8f61-71221be94835",
+  "deployedAt": "2026-11-01T16:33:28.385509Z",
+  "versions": [
+    {
+      "version_id": "5da97a88-eee5-47c9-bed3-394939005ff7",
+      "percentage": 100
+    }
+  ],
+  "rollbackVersion": "6e568c3d-cd5a-4b6b-ba11-f015c6237432"
+}

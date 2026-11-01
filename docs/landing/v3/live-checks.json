@@ -1,0 +1,170 @@
+{
+  "observedAt": "2026-11-01T16:34:15.561Z",
+  "checks": [
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/",
+      "status": 200,
+      "bytes": 2055,
+      "matchesSource": true,
+      "sha256": "38e98de70c70f7a484228b265c128531ffc95c1ab25238c8ad4cb7ab86c65384"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/v2/",
+      "status": 200,
+      "bytes": 2135,
+      "matchesSource": true,
+      "sha256": "edac372b0677cfe11cee18da3fcca9eea9dc1a3b428165186ecfda51865c174c"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/v1/",
+      "status": 200,
+      "bytes": 2585,
+      "matchesSource": true,
+      "sha256": "9e88e5aff5c425b2790d7595fd48eb726afde54688fbdf6e546fa1101bd9fc08"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/landing/home-v3.css",
+      "status": 200,
+      "bytes": 2504,
+      "matchesSource": true,
+      "sha256": "5b20afc25e59da5f675cd306b9380968b48ff065b7eea64f180fcfe6e13de27d"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/landing/media/pug-logo-v3.webp",
+      "status": 200,
+      "bytes": 258456,
+      "matchesSource": true,
+      "sha256": "2ae58e6591b3eab1168d4539e65dbb4d6999163d50fea130e21809ad4bb36535"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/landing/media/reapers-flight-v3.webp",
+      "status": 200,
+      "bytes": 575234,
+      "matchesSource": true,
+      "sha256": "dfe59abbf51fe277dc39315e880ba6d2705ad857b1880abc3820eabdac74634b"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/landing/media/reapers-sky-v3.webp",
+      "status": 200,
+      "bytes": 453182,
+      "matchesSource": true,
+      "sha256": "20a8e39d51b97734f474e786a0cf8e4aec474bf13ef3a57a9edb68a64397d3bf"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/",
+      "status": 200,
+      "bytes": 2055,
+      "matchesSource": true,
+      "sha256": "38e98de70c70f7a484228b265c128531ffc95c1ab25238c8ad4cb7ab86c65384"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/v2/",
+      "status": 200,
+      "bytes": 2135,
+      "matchesSource": true,
+      "sha256": "edac372b0677cfe11cee18da3fcca9eea9dc1a3b428165186ecfda51865c174c"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/v1/",
+      "status": 200,
+      "bytes": 2585,
+      "matchesSource": true,
+      "sha256": "9e88e5aff5c425b2790d7595fd48eb726afde54688fbdf6e546fa1101bd9fc08"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/landing/home-v3.css",
+      "status": 200,
+      "bytes": 2504,
+      "matchesSource": true,
+      "sha256": "5b20afc25e59da5f675cd306b9380968b48ff065b7eea64f180fcfe6e13de27d"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/landing/media/pug-logo-v3.webp",
+      "status": 200,
+      "bytes": 258456,
+      "matchesSource": true,
+      "sha256": "2ae58e6591b3eab1168d4539e65dbb4d6999163d50fea130e21809ad4bb36535"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/landing/media/reapers-flight-v3.webp",
+      "status": 200,
+      "bytes": 575234,
+      "matchesSource": true,
+      "sha256": "dfe59abbf51fe277dc39315e880ba6d2705ad857b1880abc3820eabdac74634b"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/landing/media/reapers-sky-v3.webp",
+      "status": 200,
+      "bytes": 453182,
+      "matchesSource": true,
+      "sha256": "20a8e39d51b97734f474e786a0cf8e4aec474bf13ef3a57a9edb68a64397d3bf"
+    },
+    {
+      "path": "/v2?from=footer",
+      "status": 308,
+      "expected": 308,
+      "location": "https://pigeonumbragroup.com/v2/?from=footer"
+    },
+    {
+      "path": "/v1?from=footer",
+      "status": 308,
+      "expected": 308,
+      "location": "https://pigeonumbragroup.com/v1/?from=footer"
+    },
+    {
+      "path": "/admin.js",
+      "status": 404,
+      "expected": 404
+    },
+    {
+      "path": "/api/admin/session",
+      "status": 404,
+      "expected": 404
+    },
+    {
+      "path": "/landing/v2/",
+      "status": 404,
+      "expected": 404
+    },
+    {
+      "path": "/landing/media/private.json",
+      "status": 404,
+      "expected": 404
+    },
+    {
+      "path": "/",
+      "method": "HEAD",
+      "status": 200,
+      "expected": 200,
+      "bodyBytes": 0
+    },
+    {
+      "path": "/",
+      "method": "POST",
+      "status": 405,
+      "expected": 405,
+      "bodyBytes": 18
+    },
+    {
+      "host": "admin.pigeonumbragroup.com",
+      "status": 302,
+      "locationHost": "falling-term-ef56.cloudflareaccess.com",
+      "accessRedirect": true
+    }
+  ],
+  "failures": []
+}
