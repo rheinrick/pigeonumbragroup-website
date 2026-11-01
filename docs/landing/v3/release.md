@@ -1,5 +1,7 @@
 # Version 3 public release — November 1, 2026
 
+The later [desktop spacing and logo adjustment](desktop-adjustment.md) is now the active release. The record below describes the initial version 3 publication.
+
 The approved full-width reaper design with the extended cloud sky is live at <https://pigeonumbragroup.com/> and <https://www.pigeonumbragroup.com/>. Both earlier designs remain available at `/v2/` and `/v1/` through the footer.
 
 - Source commit: `f500df271a47f9181542dae2ccce4d2546e73a42` on `codex/pug-reaper-homepage-v3`, pushed to origin.

@@ -1,0 +1,72 @@
+{
+  "observedAt": "2026-11-01T16:44:35.674Z",
+  "worker": "pug-public",
+  "sourceCommit": "0bddaa76ddf6aa3fa5d546e647a667af7bc94e44",
+  "deploymentId": "c32f204f-26e5-4573-8c07-bab7e87cbc7b",
+  "deployedAt": "2026-11-01T16:43:51.360498Z",
+  "versions": [
+    {
+      "version_id": "91c343f6-bf55-4496-8a0b-c78a9d6a2c90",
+      "percentage": 100
+    }
+  ],
+  "rollbackVersion": "5da97a88-eee5-47c9-bed3-394939005ff7",
+  "checks": [
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "40ea99c3b334c2c8d2c000625981911c4133cf965eb191e0caff7098bafd4fee"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/landing/home-v3.css?v=3.1",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "4c132fee16ca8c8b677d38472075348e32c24a08c2cd8a0ae01c0325469138f2"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/landing/media/pug-logo-v3-wide.webp",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "c6e8002069d5e7c600fa1dfd9b241b96009d50242e4102a417eb4e74013aeba0"
+    },
+    {
+      "host": "pigeonumbragroup.com",
+      "path": "/landing/media/pug-logo-v3.webp",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "2ae58e6591b3eab1168d4539e65dbb4d6999163d50fea130e21809ad4bb36535"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "40ea99c3b334c2c8d2c000625981911c4133cf965eb191e0caff7098bafd4fee"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/landing/home-v3.css?v=3.1",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "4c132fee16ca8c8b677d38472075348e32c24a08c2cd8a0ae01c0325469138f2"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/landing/media/pug-logo-v3-wide.webp",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "c6e8002069d5e7c600fa1dfd9b241b96009d50242e4102a417eb4e74013aeba0"
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "path": "/landing/media/pug-logo-v3.webp",
+      "status": 200,
+      "matchesSource": true,
+      "sha256": "2ae58e6591b3eab1168d4539e65dbb4d6999163d50fea130e21809ad4bb36535"
+    }
+  ]
+}
