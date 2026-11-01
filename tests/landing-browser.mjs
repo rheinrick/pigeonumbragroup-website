@@ -1,7 +1,7 @@
 import { chromium, expect } from '@playwright/test'
 import assert from 'node:assert/strict'
 import { mkdirSync, writeFileSync } from 'node:fs'
-const base = process.env.LANDING_URL || 'http://127.0.0.1:4329'
+const base = new URL('/v1/', process.env.LANDING_URL || 'http://127.0.0.1:4332').href
 const browser = await chromium.launch({headless:true, channel:process.env.PLAYWRIGHT_CHANNEL ?? 'chrome', executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH})
 mkdirSync('test-results/landing',{recursive:true})
 const checks=[]

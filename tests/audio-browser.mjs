@@ -1,6 +1,6 @@
 import { chromium, expect } from '@playwright/test'
 import assert from 'node:assert/strict'
-const base = process.env.LANDING_URL || 'http://127.0.0.1:4332'
+const base = new URL('/v1/', process.env.LANDING_URL || 'http://127.0.0.1:4332').href
 const browser = await chromium.launch({channel:'chrome',headless:true})
 const instrument = () => {
   const Original = window.AudioContext

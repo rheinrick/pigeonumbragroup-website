@@ -1,16 +1,20 @@
 # Public landing page
 
+## Version 2.0 — November 1, 2026
+
+The current homepage uses the supplied winged logo on a black background with a slowly moving monochrome still. Its footer links to the original page at `/v1/`, which retains the pigeon video and opt-in soundtrack. See [version 2 implementation and verification](landing/v2/README.md). The sections below describe the preserved v1 design unless explicitly noted.
+
 ## Local workflow
 
 Use Node 24.19.x and the existing npm lockfile (`npm ci`).
 
-- `npm run dev:landing` — local Worker at http://127.0.0.1:4329/.
+- `npm run dev:landing` — public-only local Worker at http://127.0.0.1:4332/; v1 is at `/v1/`.
 - `npm run check` — syntax, Worker routing/authentication, deployment-gate tests.
 - `npm run build` — Wrangler dry-run bundle validation; does not deploy.
 - `npm run test:landing` — Chrome screenshots and motion/fallback checks against the running local Worker. Override `LANDING_URL` if needed.
 - `npm run test:browser` — existing synthetic admin browser suite.
 
-The local upstream override is intentional: Wrangler otherwise derives the admin hostname from the existing route and presents the protected admin console. `npm run dev` retains its original behavior. Browser tests use installed Chrome, matching the existing suite; optional `PLAYWRIGHT_CHANNEL` and `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` overrides are supported.
+The landing preview uses `wrangler.public.jsonc`, which contains no admin service bindings. `npm run dev` retains its original admin behavior. The original landing/audio browser suites now target `/v1/`; `LANDING_URL` overrides the base origin. Browser tests use installed Chrome, matching the existing suite; optional `PLAYWRIGHT_CHANNEL` and `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` overrides are supported.
 
 ## Implementation and routing
 

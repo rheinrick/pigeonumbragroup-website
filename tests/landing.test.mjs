@@ -19,6 +19,29 @@ test('public landing and its media do not call admin services', async () => {
   assert.equal((await worker.fetch(new Request('https://pigeonumbragroup.com/', {method:'HEAD'}), env)).body, null)
 })
 
+test('v1 archive and v2 assets retain the explicit public routing boundary', async () => {
+  const paths = []
+  const env = { ASSETS: { fetch: async req => {
+    paths.push(new URL(req.url).pathname)
+    return new Response('public')
+  } } }
+  for (const method of ['GET', 'HEAD']) {
+    const response = await worker.fetch(new Request('https://pigeonumbragroup.com/v1/', { method }), env)
+    assert.equal(response.status, 200)
+    assert.equal(response.headers.get('Cache-Control'), 'no-cache')
+    if (method === 'HEAD') assert.equal(response.body, null)
+  }
+  assert.deepEqual(paths, ['/landing/v1/', '/landing/v1/'])
+  const redirect = await worker.fetch(new Request('https://pigeonumbragroup.com/v1?from=footer'), env)
+  assert.equal(redirect.status, 308)
+  assert.equal(redirect.headers.get('Location'), 'https://pigeonumbragroup.com/v1/?from=footer')
+  assert.equal((await worker.fetch(new Request('https://pigeonumbragroup.com/v1/', { method: 'POST' }), env)).status, 405)
+  for (const path of ['/landing/home-v2.css', '/landing/atmosphere-v2.js', '/landing/media/pug-logo-v2.webp', '/landing/media/night-conservatory-v2.webp'])
+    assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com${path}`), env)).status, 200)
+  for (const path of ['/v1/admin.js', '/v1/index.html', '/landing/v1/', '/landing/media/private.json'])
+    assert.equal((await worker.fetch(new Request(`https://pigeonumbragroup.com${path}`), env)).status, 404)
+})
+
 test('public hostname cannot expose admin files, APIs, or arbitrary landing assets', async () => {
   const env = { ASSETS: { fetch: () => { throw Error('Must not read private files') } } }
   for (const path of ['/index.html','/admin.js','/api/admin/session','/landing/private.json','/landing/../admin.js']) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101110">
+  <meta name="theme-color" content="#050505">
   <title>Pigeon Umbra Group LLC</title>
   <meta name="description" content="Pigeon Umbra Group LLC — independent digital projects.">
   <link rel="canonical" href="https://pigeonumbragroup.com/">
@@ -11,33 +11,32 @@
   <meta property="og:title" content="Pigeon Umbra Group LLC">
   <meta property="og:description" content="Pigeon Umbra Group LLC — independent digital projects.">
   <meta property="og:url" content="https://pigeonumbragroup.com/">
-  <meta property="og:image" content="https://pigeonumbragroup.com/landing/media/social-v1.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Pigeon Umbra Group LLC">
+  <meta property="og:image" content="https://pigeonumbragroup.com/landing/media/pug-logo-v2.webp">
+  <meta property="og:image:alt" content="The winged Pigeon Umbra Group emblem">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/landing/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="/landing/fonts/anton.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/landing/landing.css?v=3">
-  <script src="/landing/motion.js" defer></script>
-  <script src="/landing/audio.js" defer></script>
+  <link rel="preload" as="image" href="/landing/media/pug-logo-v2.webp">
+  <link rel="stylesheet" href="/landing/home-v2.css">
+  <script src="/landing/atmosphere-v2.js" defer></script>
 </head>
 <body>
-  <main class="hero">
-    <div class="scene" aria-hidden="true">
-      <img class="backdrop" src="/landing/media/pigeons-poster-v1.jpg" alt="" width="1600" height="900" fetchpriority="high">
-      <video class="backdrop motion" muted autoplay loop playsinline preload="none" poster="/landing/media/pigeons-poster-v1.jpg" tabindex="-1" disablepictureinpicture></video>
-    </div>
-    <h1 aria-label="PIGEON UMBRA GROUP LLC">
-      <span class="wordmark" aria-hidden="true"><span>PIGEON</span><span class="second-line">UMBRA <span>GROUP</span></span><span class="llc">LLC</span></span>
-    </h1>
-    <footer>
-      <small>© <span id="year">2026</span> Pigeon Umbra Group LLC.</small>
-      <div class="playback-controls"><button id="motion-control" type="button" hidden><span class="motion-icon" aria-hidden="true"></span><span id="motion-label">Play motion</span></button>
-      <button id="audio-control" type="button" data-audio-src="/landing/media/lobby-waltz-v1.mp3" aria-pressed="false" hidden><span>Enable audio</span></button>
-      <a id="audio-credits" href="/landing/credits/" hidden>Music credits</a></div>
-      <span id="audio-status" class="sr-only" role="status"></span>
+  <div class="atmosphere" aria-hidden="true">
+    <img src="/landing/media/night-conservatory-v2.webp" alt="" width="1672" height="941" decoding="async">
+  </div>
+  <div class="site-shell">
+    <main>
+      <h1><img class="emblem" src="/landing/media/pug-logo-v2.webp" alt="Pigeon Umbra Group" width="1254" height="1254" fetchpriority="high"></h1>
+    </main>
+    <footer class="site-footer">
+      <div class="colophon">
+        <p>Independent digital projects.</p>
+        <small>© <span id="year">2026</span> Pigeon Umbra Group LLC</small>
+      </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <button id="atmosphere-control" type="button" hidden><span class="motion-symbol" aria-hidden="true">Ⅱ</span><span id="atmosphere-label">Pause motion</span></button>
+        <a class="archive-link" href="/v1/">Version 1.0 <span aria-hidden="true">↗</span></a>
+      </nav>
     </footer>
-  </main>
+  </div>
 </body>
 </html>
