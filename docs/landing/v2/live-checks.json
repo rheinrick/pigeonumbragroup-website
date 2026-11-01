@@ -1,0 +1,83 @@
+{
+  "checkedAt": "2026-11-01T16:02:46.575Z",
+  "worker": "pug-public",
+  "version": "6e568c3d-cd5a-4b6b-ba11-f015c6237432",
+  "checks": [
+    {
+      "url": "https://pigeonumbragroup.com/",
+      "status": 200,
+      "bytes": 2114,
+      "cacheControl": "no-cache",
+      "sha256": "cd9355d61dcd2a65c7be0742da1c3803cf542be484b741385f243144e8689744"
+    },
+    {
+      "url": "https://www.pigeonumbragroup.com/",
+      "status": 200,
+      "bytes": 2114,
+      "cacheControl": "no-cache",
+      "sha256": "cd9355d61dcd2a65c7be0742da1c3803cf542be484b741385f243144e8689744"
+    },
+    {
+      "url": "https://pigeonumbragroup.com/v1/",
+      "status": 200,
+      "bytes": 2585,
+      "cacheControl": "no-cache",
+      "sha256": "9e88e5aff5c425b2790d7595fd48eb726afde54688fbdf6e546fa1101bd9fc08"
+    },
+    {
+      "url": "https://pigeonumbragroup.com/v1?archive=1",
+      "status": 308,
+      "bytes": 0,
+      "cacheControl": null
+    },
+    {
+      "url": "https://pigeonumbragroup.com/landing/home-v2.css",
+      "status": 200,
+      "bytes": 2686,
+      "cacheControl": "public, max-age=3600",
+      "sha256": "ca9ebc8b0c11fb746b486cb61b30b074a1ffa95fdb37202e220df7857627bc32"
+    },
+    {
+      "url": "https://pigeonumbragroup.com/landing/atmosphere-v2.js",
+      "status": 200,
+      "bytes": 1082,
+      "cacheControl": "public, max-age=3600",
+      "sha256": "457e326396d53b58ca27856aed740a565489d3c9ca102c908a27995a73669db9"
+    },
+    {
+      "url": "https://pigeonumbragroup.com/landing/media/pug-logo-v2.webp",
+      "status": 200,
+      "bytes": 968250,
+      "cacheControl": "public, max-age=86400",
+      "sha256": "a4ffae6685758f4c6edc94a24662f04d2609c8f75ce88afdc6db48e5923ab9b9"
+    },
+    {
+      "url": "https://pigeonumbragroup.com/landing/media/night-conservatory-v2.webp",
+      "status": 200,
+      "bytes": 126084,
+      "cacheControl": "public, max-age=86400",
+      "sha256": "a95f36605c0f5f937db082c3f7f846ea64605e14a5adcf7fd92b3c1ee447bbd2"
+    },
+    {
+      "url": "https://pigeonumbragroup.com/admin.js",
+      "status": 404,
+      "bytes": 9,
+      "cacheControl": null
+    },
+    {
+      "url": "https://pigeonumbragroup.com/landing/v1/index.html",
+      "status": 404,
+      "bytes": 9,
+      "cacheControl": null
+    },
+    {
+      "url": "https://admin.pigeonumbragroup.com/",
+      "status": 302,
+      "bytes": 143,
+      "cacheControl": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+      "accessLoginRedirect": true
+    }
+  ],
+  "headStatus": 200,
+  "postStatus": 405
+}
