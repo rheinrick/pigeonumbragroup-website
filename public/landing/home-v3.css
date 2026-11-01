@@ -83,22 +83,6 @@ body {
   line-height: 1.7;
   letter-spacing: .03em;
 }
-.footer-nav { display: flex; align-items: center; gap: 30px; }
-.footer-nav a {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  border-bottom: 1px solid #ffffff30;
-  color: var(--text);
-  font-size: 10px;
-  line-height: 1.4;
-  letter-spacing: .09em;
-  text-decoration: none;
-}
-.footer-nav span { color: var(--muted); font-size: 15px; }
-.footer-nav a:hover { color: #fff; border-color: #fff; }
-.footer-nav a:focus-visible { outline: 1px solid #e2dcd3; outline-offset: 6px; }
 
 @media (min-width: 601px) {
   .wordmark { width: 90vw; padding-top: clamp(8px, 1vw, 20px); }
@@ -110,5 +94,4 @@ body {
   .hero { min-height: calc(100svh - 170px); }
   .wordmark { width: 76vw; }
   .site-footer { align-items: flex-start; flex-direction: column; gap: 18px; padding-top: 24px; }
-  .footer-nav { gap: 28px; }
 }
