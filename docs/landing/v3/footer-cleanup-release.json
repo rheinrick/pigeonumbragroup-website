@@ -1,0 +1,32 @@
+{
+  "observedAt": "2026-11-01T16:53:09.029Z",
+  "sourceCommit": "9c5b4e32003935ab520be6b85e5083c2ad922b67",
+  "deployedAt": "2026-11-01T16:52:25.7043Z",
+  "versions": [
+    {
+      "version_id": "db2bbb75-aef0-4be4-989a-b3f62721212c",
+      "percentage": 100
+    }
+  ],
+  "rollbackVersion": "91c343f6-bf55-4496-8a0b-c78a9d6a2c90",
+  "checks": [
+    {
+      "host": "pigeonumbragroup.com",
+      "status": 200,
+      "htmlMatchesSource": true,
+      "versionLinksRemoved": true,
+      "companyFooterRetained": true,
+      "cssStatus": 200,
+      "cssMatchesSource": true
+    },
+    {
+      "host": "www.pigeonumbragroup.com",
+      "status": 200,
+      "htmlMatchesSource": true,
+      "versionLinksRemoved": true,
+      "companyFooterRetained": true,
+      "cssStatus": 200,
+      "cssMatchesSource": true
+    }
+  ]
+}

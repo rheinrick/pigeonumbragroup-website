@@ -1,6 +1,6 @@
 # Version 3 public release — November 1, 2026
 
-The later [desktop spacing and logo adjustment](desktop-adjustment.md) is now the active release. The record below describes the initial version 3 publication.
+The later [footer cleanup](footer-cleanup-release.json), following the [desktop spacing and logo adjustment](desktop-adjustment.md), is now the active release. The record below describes the initial version 3 publication.
 
 The approved full-width reaper design with the extended cloud sky is live at <https://pigeonumbragroup.com/> and <https://www.pigeonumbragroup.com/>. Both earlier designs remain available at `/v2/` and `/v1/` through the footer.
 

@@ -2,7 +2,7 @@
 
 Prepared and published November 1, 2026 on `codex/pug-reaper-homepage-v3` in the public landing checkout. Version 3 is live at <https://pigeonumbragroup.com/> and <https://www.pigeonumbragroup.com/>. See the [release record](release.md) for the source commit, deployed version, rollback and live verification.
 
-The supplied black-metal wordmark sits over an extended cloudy sky. Desktop screens use a logo spanning 90% of the viewport and an 18% sky extension above the original square artwork. Mobile retains its approved 76% logo width and 25% sky extension. The flat header and fade to white have been removed. The original full-width illustration, its proportions and the lower fade to black are preserved. A small footer retains the company description and copyright, with links to versions 2.0 and 1.0. The new homepage needs no JavaScript or third-party resources.
+The supplied black-metal wordmark sits over an extended cloudy sky. Desktop screens use a logo spanning 90% of the viewport and an 18% sky extension above the original square artwork. Mobile retains its approved 76% logo width and 25% sky extension. The flat header and fade to white have been removed. The original full-width illustration, its proportions and the lower fade to black are preserved. A small footer retains only the company description and copyright. The new homepage needs no JavaScript or third-party resources.
 
 ## Source and assets
 
@@ -25,6 +25,7 @@ The supplied black-metal wordmark sits over an extended cloudy sky. Desktop scre
 - Full-width follow-up: artwork edges match the viewport at 320, 390, 768, 1440 and 1920px, with no horizontal overflow and no side mask. The image retains its square proportions.
 - Cloud extension follow-up: browser inspection at 320, 390, 768, 1440 and 1920px verified the full-width artwork, proportional original image, transparent logo header, absent white overlay, and no horizontal overflow. No browser warning/error logs were recorded. All nine checks and the public build dry-run passed again.
 - Desktop follow-up: the logo spans 90% of the viewport, and reduced sky brings the reaper about 101px higher at 1440px width. Mobile geometry exactly matches the previous live release. See the [desktop adjustment release](desktop-adjustment.md).
+- Footer cleanup published at `2026-11-01T16:52:25.7043Z`: removed both previous-version links and their unused CSS. The live homepage and CSS matched source on both domain addresses; browser inspection confirmed zero footer links and the retained company text. Build dry-run passed. Active version `db2bbb75-aef0-4be4-989a-b3f62721212c` is at 100%. See [release evidence](footer-cleanup-release.json) and the [current footer](live-footer-cleanup.jpg). Full-page screenshots below predate this footer-only change. No broad regression suite was repeated for this HTML/CSS removal.
 - [Current desktop preview](live-desktop-adjustment.jpg) and [current mobile preview](live-mobile-adjustment.jpg). Earlier full-width/cloud previews and measurements remain alongside these for comparison.
 
 Physical-device and Safari testing and the complete older audio/browser suites were not performed. The original administration checkout was not changed. Production deployment and live HTTP/browser checks passed; see the [release record](release.md).
