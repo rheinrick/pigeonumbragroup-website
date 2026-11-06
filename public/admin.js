@@ -1,3 +1,4 @@
+import { setupSocial } from './social.js'
 import { setupBabyHoroscope } from './baby-horoscope.js'
 import { setupDread } from './dread.js'
 import { setupIntelligence } from './intelligence.js'
@@ -11,6 +12,8 @@ import { setupBilling } from './billing.js'
 import { setupCommunity } from './community.js'
 import { setupUsers } from './users.js'
 let state
+let modulesInitialized = false
+let saving = false, refreshRequired = false
 const $ = (id) => document.getElementById(id)
 const text = (tag, value) => {
   const node = document.createElement(tag)
@@ -23,7 +26,12 @@ async function load() {
     throw Error(
       'Could not load the admin workspace. Check your sign-in and backend configuration.',
     )
-  state = await r.json()
+  const next = await r.json()
+  if (state && (next.reviewer !== state.reviewer || next.role !== state.role)) {
+    location.reload()
+    return
+  }
+  state = next
   $('identity').textContent =
     `${state.reviewer} · ${state.role} · Revision ${state.revision}`
   renderSystem()
@@ -87,6 +95,7 @@ async function load() {
     if (c.source) detail.append(text('p', `Source: ${c.source}`))
     if (c.notification !== 'sent' && state.capabilities.retryContact) {
       const retry = text('button', 'Retry notification')
+      retry.dataset.capability = 'retryContact'
       retry.onclick = () => void save('retry-contact', { id: c.id, reason: 'Retrying the saved contact notification.' })
       detail.append(retry)
     }
@@ -94,35 +103,69 @@ async function load() {
   }
   $('contacts').replaceChildren(state.contacts?.length ? contacts.wrap : text('p', 'No submissions yet.'))
   applyCapabilities()
-  setupCommunity(state)
-  setupUsers(state)
-  setupBilling(state)
-  setupDeepDives(state)
-  setupEngagement(state)
-  setupOperations(state)
-  setupIntelligence(state)
-  setupDread(state)
-  setupParticipation(state)
-  setupInventory()
+  // Independent modules own their refreshes; a core save must preserve their drafts.
+  if (!modulesInitialized) {
+    setupCommunity(state)
+    setupUsers(state)
+    setupBilling(state)
+    setupDeepDives(state)
+    setupEngagement(state)
+    setupSocial(state)
+    setupOperations(state)
+    setupIntelligence(state)
+    setupDread(state)
+    setupParticipation(state)
+    setupInventory()
+    modulesInitialized = true
+  }
   buildSectionMenu()
   navigate()
+  $('retry-workspace').hidden = true
 }
 async function save(action, payload) {
-  document.querySelectorAll('button').forEach((b) => (b.disabled = true))
+  if (saving || refreshRequired) return
+  saving = true
+  applyCapabilities()
+  $('notice').textContent = 'Saving…'
+  let confirmed = false
   try {
     const r = await fetch(`/api/admin/${action}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...payload, expectedRevision: state.revision }),
     })
-    const result = await r.json()
-    if (!r.ok) throw Error(result.error ?? 'Save failed')
+    const result = await r.json().catch(() => null)
+    if (!r.ok) {
+      const error = Error(result?.error ?? 'Save failed. Check your sign-in and backend connection.')
+      error.status = r.status
+      throw error
+    }
+    if (!result || typeof result !== 'object') throw Error('The save response could not be verified.')
+    confirmed = true
     await load()
     $('notice').textContent = 'Saved. The workspace has been refreshed.'
   } catch (e) {
-    $('notice').textContent = e.message
+    refreshRequired = confirmed || !e.status || e.status >= 500
+    $('retry-workspace').hidden = !refreshRequired
+    $('notice').textContent = confirmed
+      ? 'Saved, but the workspace could not refresh. Retry loading before making another change.'
+      : refreshRequired ? 'Could not confirm whether the change was saved. Retry loading before making another change.' : e.message
   } finally {
+    saving = false
     applyCapabilities()
+  }
+}
+$('retry-workspace').onclick = async () => {
+  if (saving) return
+  saving = true; $('retry-workspace').disabled = true; applyCapabilities()
+  try {
+    await load()
+    refreshRequired = false
+    $('notice').textContent = 'Workspace refreshed. Review the current state before making another change.'
+  } catch (error) {
+    $('notice').textContent = error.message
+  } finally {
+    saving = false; $('retry-workspace').disabled = false; applyCapabilities()
   }
 }
 $('decision-form').onsubmit = (e) => {
@@ -184,6 +227,7 @@ navigate()
 void load().catch((e) => {
   $('identity').textContent = 'DataCenter workspace unavailable. Other project checks remain independent.'
   $('notice').textContent = e.message
+  refreshRequired = true; $('retry-workspace').hidden = false; applyCapabilities()
 })
 
 function buildSectionMenu() {
@@ -233,11 +277,8 @@ function navigate(focus = false) {
   }
 }
 function applyCapabilities() {
-  document.querySelectorAll('button').forEach((button) => {
-    button.disabled = false
-  })
   document.querySelectorAll('[data-capability]').forEach((button) => {
-    button.disabled = !state?.capabilities[button.dataset.capability]
+    button.disabled = saving || refreshRequired || !state?.capabilities[button.dataset.capability]
   })
 }
 function card(label, value) {

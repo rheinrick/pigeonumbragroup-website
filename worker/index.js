@@ -66,6 +66,12 @@ export default {
         if (request.method !== (read ? 'GET' : 'POST')) return response('Method not allowed', 405)
         if (write && identity.role === 'readonly') return response('Read-only role.', 403)
       }
+      if (url.pathname.startsWith('/api/admin/social/')) {
+        const action = url.pathname.slice('/api/admin/social/'.length)
+        if (!['state', 'scan', 'verify', 'pause', 'create', 'post'].includes(action)) return response('Not found', 404)
+        if (!['owner', 'admin'].includes(identity.role)) return response('Social administration permission required.', 403)
+        if (request.method !== (action === 'state' ? 'GET' : 'POST')) return response('Method not allowed', 405)
+      }
       if (url.pathname === '/api/admin/drlogico/posts') {
         if (!['GET', 'POST'].includes(request.method)) return response('Method not allowed', 405)
         if (!env.DRLOGICO) return response('DrLoGiCo blog is not connected yet.', 503)
@@ -84,6 +90,7 @@ export default {
           !/^\/api\/admin\/intelligence\/(state|configure|domain|run|stage|publish|rollback|project)$/.test(url.pathname) &&
           !/^\/api\/admin\/operations\/(state|control|commerce-check)$/.test(url.pathname) &&
           !/^\/api\/admin\/engagement\/(state|run|retry|acceptance)$/.test(url.pathname) &&
+          !/^\/api\/admin\/social\/(state|scan|verify|pause|create|post)$/.test(url.pathname) &&
           !/^\/api\/admin\/billing\/(state|reconcile)$/.test(url.pathname) &&
           !/^\/api\/admin\/community\/(comments|thread|reports|users|comment|report|user)$/.test(
             url.pathname,

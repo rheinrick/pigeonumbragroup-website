@@ -147,3 +147,6 @@ node_modules/
 .env*
 
 /test-results/
+
+# Local run evidence; may hold private provider identifiers
+/output/

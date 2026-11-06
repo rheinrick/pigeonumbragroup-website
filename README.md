@@ -2,6 +2,8 @@
 
 Current combined console: DataCenter, Baby Horoscope operations/editorial review, and DrLoGiCo blog publishing. DrLoGiCo activation and live acceptance completed October 13, 2026; see [blog publishing](docs/drlogico-blog.md). The dated sections below retain the earlier DataCenter history.
 
+October 31 audit: shared panel recovery now preserves drafts, distinguishes confirmed and uncertain saves, and retries reads without resubmitting changes. Core refreshes preserve independent drafts; inventory, discovery and participation report refresh failures accurately. All local checks passed; these updates have not been deployed. Start with the [Ponytail audit](docs/ponytail-audit-2026-10-31.md); the [October 24 handoff](docs/autonomous-review-2026-10-24.md) retains the earlier integration and preservation history.
+
 ## Current deployment boundary (2026-09-10)
 
 The console is deployed at `admin.pigeonumbragroup.com` behind Cloudflare Access. The sole configured owner remains `sudopug1337@datacenterdata.net`; JWT/issuer/audience/email checks protect assets and API calls. `DATACENTER` targets the private `datacenterdata-control` service with existing D1. Managed R2 publication and contact-inbox email import remain unavailable; public corrections still use email links.
@@ -25,6 +27,8 @@ See the sibling DataCenter [Phase 15 handoff](../datacenterdata-website/docs/pha
 ## Checks
 
 Node 24.19/npm. Run `npm ci`, `npm run check`, and `npm run test:browser` (install Playwright Chromium or supply `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`). Browser tests use clearly synthetic API fixtures, exercise all navigation, disabled capabilities after save, revision payloads, missing fields, escaped untrusted content and mobile layout. Screenshots are ignored under `test-results/`.
+
+Also run `npm run test:dread-browser`, `npm run test:baby-browser`, `npm run test:inventory-discovery-browser`, `npm run test:social-browser` and `npm run test:panel-recovery-browser`. The verification workflow runs all six browser suites. Recovery checks cover retained drafts, disabled capabilities, duplicate writes, conflicts, confirmed/uncertain actions and read-only retries.
 
 `npm exec wrangler deploy -- --dry-run` bundles without publishing. `npm run deploy` requires `CLOUDFLARE_API_TOKEN` supplied securely in the environment. It reads the sibling backend configuration and checks live Access app, issuer/audience, sole owner allow policy, and absence of bypass/overlapping applications before deploying. The API token needs Access Read and Worker deployment permissions. Never remove the deployment gate to work around missing configuration.
 

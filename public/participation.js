@@ -144,7 +144,10 @@ export function setupParticipation(session) {
     try {
       notice.textContent = 'Saving…'
       await api(path, payload)
-      await load()
+      if (!await load()) {
+        notice.textContent = 'Saved, but status could not refresh. Refresh participation before another change.'
+        return
+      }
       notice.textContent =
         path === 'review'
           ? 'Review saved. Nothing was published.'
@@ -180,8 +183,10 @@ export function setupParticipation(session) {
       renderOrganizations()
       renderNotifications()
       notice.textContent = `Loaded ${state.submissions.length} requests. ${state.staging.filter((s) => s.status === 'staged').length} recent inventory changes staged; release review still required.`
+      return true
     } catch (e) {
       notice.textContent = e.message
+      return false
     }
   }
   function reasonForm(label, callback) {

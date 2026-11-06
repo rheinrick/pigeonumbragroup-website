@@ -97,7 +97,8 @@ export function setupInventoryDiscovery(host) {
     try {
       const params = new URLSearchParams({q:q.value, change:change.value, decision:decision.value, priority:priority.value, page:String(page)})
       const value = await result(await fetch(api + '?' + params, {cache:'no-store'}))
-      if (sequence !== requestSequence) return
+      // A newer load owns the outcome, so a superseded one is not a failed refresh.
+      if (sequence !== requestSequence) return true
       data = value
       page = value.page ?? page
       summary.replaceChildren()
@@ -115,13 +116,15 @@ export function setupInventoryDiscovery(host) {
       actions.querySelector('.discovery-import')?.remove()
       if (value.canImport) actions.append(importControl())
       notice.textContent = value.canReview ? 'Discovery inbox loaded. Review decisions preserve the public catalog.' : 'Discovery inbox loaded. Your role has read-only access.'
+      return true
     } catch (error) {
-      if (sequence !== requestSequence) return
+      if (sequence !== requestSequence) return true
       data = null
       summary.replaceChildren()
       provenance.replaceChildren()
       actions.querySelector('.discovery-import')?.remove()
       notice.textContent = error.message
+      return false
     } finally {
       if (sequence === requestSequence) {
         loading = false
@@ -204,8 +207,7 @@ export function setupInventoryDiscovery(host) {
       message.textContent = 'Saving discovery review…'
       try {
         const value = await result(await fetch(api+'-review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batchId:data.batch.id ?? data.batch.batchId,id:row.id,fingerprint:row.fingerprint,expectedRevision:data.revision,decision:decision.value,reason:reason.value.trim(),evidence,identity:{kind:identity.value,notes:notes.value.trim()}})}))
-        await load()
-        notice.textContent = value.note ?? 'Discovery review saved in audit. Public inventory remains unchanged.'
+        notice.textContent = await load() ? value.note ?? 'Discovery review saved in audit. Public inventory remains unchanged.' : 'Saved, but discovery could not refresh. Refresh the discovery inbox before another change.'
       } catch (error) {
         message.textContent = error.status === 409 ? `${error.message} Refresh the discovery inbox before reviewing again.` : error.message
       } finally { save.disabled = false }
@@ -231,8 +233,7 @@ export function setupInventoryDiscovery(host) {
         const payload = JSON.stringify({report:prepared.report,observationBase64:prepared.observationBase64,expectedRevision:data.revision})
         if(new Blob([payload]).size > 14_000_000) throw Error('Prepared import exceeds 14 MB.')
         const value = await result(await fetch(api+'-import',{method:'POST',headers:{'Content-Type':'application/json'},body:payload}))
-        await load()
-        notice.textContent = value.note ?? 'Existing observation package imported. Public inventory remains unchanged.'
+        notice.textContent = await load() ? value.note ?? 'Existing observation package imported. Public inventory remains unchanged.' : 'Saved, but discovery could not refresh. Refresh the discovery inbox before another change.'
       } catch(error) { message.textContent = error.message }
       finally {save.disabled=false}
     }

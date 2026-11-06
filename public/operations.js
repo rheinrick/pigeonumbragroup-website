@@ -1,3 +1,4 @@
+import { panelActions } from './panel-actions.js'
 import { recordTable, recordRow } from './records.js'
 const el = (tag, text) => {
   const n = document.createElement(tag)
@@ -9,29 +10,9 @@ export function setupOperations(state) {
   if (!box) return
   box.hidden = !['owner', 'admin'].includes(state.role)
   if (box.hidden) return
-  async function api(path, data) {
-    const r = await fetch('/api/admin/operations/' + path, {
-      cache: 'no-store',
-      ...(data
-        ? {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-          }
-        : {}),
-    })
-    const j = await r.json()
-    if (!r.ok)
-      throw Error(
-        j.error ?? 'Operations check failed; refresh for status.',
-      )
-    return j
-  }
-  async function load() {
-    try {
-      const d = await api('state')
-      box.replaceChildren(
-        el('h2', 'Business and operations'),
+  const { load, save } = panelActions(box, '/api/admin/operations/', 'operations', 'Business and operations', d => {
+      const box = document.createDocumentFragment()
+      box.append(
         el(
           'p',
           `${d.mode === 'test' ? 'TEST / SANDBOX — no live revenue' : 'LIVE'} · Pro checkout ${d.gates.pro ? 'enabled' : 'disabled'} · Deep Dive checkout ${d.gates.deepDive ? 'enabled' : 'disabled'}`,
@@ -54,23 +35,12 @@ export function setupOperations(state) {
       const directoryLink = el('p', '')
       directoryLink.append(users)
       box.append(directoryLink)
-      const refresh = el('button', 'Refresh operations')
-      refresh.onclick = () => void load()
       const check = el(
         'button',
         'Validate Stripe configuration (read only)',
       )
-      check.onclick = async () => {
-        check.disabled = true
-        try {
-          await api('commerce-check', {})
-          await load()
-        } catch (e) {
-          box.append(el('p', e.message))
-          check.disabled = false
-        }
-      }
-      box.append(refresh, check, el('h3', 'Checks'))
+      check.onclick = () => void save('commerce-check', {}, 'Stripe configuration checked. Status refreshed.')
+      box.append(check, el('h3', 'Checks'))
       const checks = recordTable('Operational checks', ['Check', 'Status', 'Checked', 'Summary'])
       for (const c of d.checks) {
         const stale = Date.now() - c.checked_at > (c.name === 'scheduler' ? 15 * 60 * 1000 : c.name === 'stripe-catalog' ? 26 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000)
@@ -106,20 +76,9 @@ export function setupOperations(state) {
           disabled ? 'Restore configured ' + name : 'Disable ' + name,
         )
         form.append(label, button)
-        form.onsubmit = async (e) => {
+        form.onsubmit = e => {
           e.preventDefault()
-          button.disabled = true
-          try {
-            await api('control', {
-              name,
-              disabled: !disabled,
-              reason: reason.value,
-            })
-            await load()
-          } catch (e) {
-            box.append(el('p', e.message))
-            button.disabled = false
-          }
+          void save('control', { name, disabled: !disabled, reason: reason.value })
         }
         controls.append(form)
       }
@@ -155,15 +114,7 @@ export function setupOperations(state) {
       metrics.setAttribute('aria-label', 'Aggregate events')
       metrics.append(table)
       box.append(el('h3', 'Aggregate events — rolling 30 days'), metrics)
-    } catch (e) {
-      box.replaceChildren(
-        el('h2', 'Business and operations'),
-        el('p', e.message),
-      )
-      const retry = el('button', 'Retry operations')
-      retry.onclick = () => void load()
-      box.append(retry)
-    }
-  }
+      return box
+  })
   void load()
 }

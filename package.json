@@ -4,12 +4,14 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "check": "node --check public/drlogico.js && node --check worker/index.js && node --check worker/baby-horoscope.js && node --check worker/baby-editorial.js && node --check public/baby-horoscope.js && node --check public/baby-editorial.js && node --check public/admin.js && node --check public/intelligence.js && node --check public/dread.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/inventory-discovery.js && node --check public/operations.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
+    "check": "node --check public/panel-actions.js && node --check public/drlogico.js && node --check worker/index.js && node --check worker/baby-horoscope.js && node --check worker/baby-editorial.js && node --check public/baby-horoscope.js && node --check public/baby-editorial.js && node --check public/admin.js && node --check public/social.js && node --check public/intelligence.js && node --check public/dread.js && node --check public/community.js && node --check public/deep-dives.js && node --check public/billing.js && node --check public/inventory.js && node --check public/inventory-discovery.js && node --check public/operations.js && node --check public/engagement.js && node --check public/participation.js && node --test tests/*.test.mjs",
     "deploy": "node scripts/deploy.mjs",
     "test:browser": "node tests/browser.mjs",
     "test:dread-browser": "node tests/dread-browser.mjs",
     "test:inventory-discovery-browser": "node tests/inventory-discovery-browser.mjs",
-    "test:baby-browser": "node tests/baby-browser.mjs"
+    "test:baby-browser": "node tests/baby-browser.mjs",
+    "test:social-browser": "node tests/social-browser.mjs",
+    "test:panel-recovery-browser": "node tests/panel-recovery-browser.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
@@ -18,7 +20,8 @@
     "wrangler": "4.130.0"
   },
   "overrides": {
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5",
+    "undici": "^7.30.1"
   },
   "engines": {
     "node": ">=24.19.0 <25"

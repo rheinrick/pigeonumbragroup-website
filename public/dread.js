@@ -1,3 +1,4 @@
+import { panelActions } from './panel-actions.js'
 import { node, recordTable, recordRow, expandableRow, displayDate } from './records.js'
 const allowedRoles = ['owner', 'admin', 'readonly']
 const field = (form, label, value, type = 'text') => {
@@ -25,37 +26,10 @@ export function setupDread(account) {
   if (!box) return
   box.hidden = !allowedRoles.includes(account.role)
   if (box.hidden) { box.replaceChildren(); return }
-  const notice = node('p'); notice.setAttribute('role', 'status'); notice.setAttribute('aria-live', 'polite')
-  let loading = false, saving = false
-  async function request(path = 'state', payload) {
-    const response = await fetch('/api/admin/dread/' + path, { cache: 'no-store', ...(payload === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }) })
-    const result = await response.json()
-    if (!response.ok) throw Error(result.error || 'Dread administration is unavailable.')
-    return result
-  }
-  async function save(path, payload) {
-    if (saving) return
-    saving = true
-    box.querySelectorAll('button,input,select,textarea').forEach(input => { input.disabled = true })
-    notice.textContent = 'Saving reviewed Dread changes…'
-    try {
-      await request(path, payload)
-      await load()
-      notice.textContent = 'Saved. Dread policy and ingestion status refreshed.'
-    } catch (error) {
-      // Refresh the revision after a conflict; retain the error until a later action.
-      await load()
-      notice.textContent = error.message
-    } finally { saving = false }
-  }
-  async function load() {
-    if (loading) return
-    loading = true
-    try {
-      const state = await request()
+  const { load, save } = panelActions(box, '/api/admin/dread/', 'Dread', 'DataCenterDread // Delta Access', state => {
+      const box = document.createDocumentFragment()
       const canWrite = account.role !== 'readonly' && state.canWrite === true
-      box.replaceChildren(node('h2', 'DataCenterDread // Delta Access'), node('p', 'Public Access, Gate 1 Delta and reserved Gate 2 Omega. Dread Gate policies are separate from DataCenterData Free, Pro and Intelligence.'), notice)
-      const refresh = node('button', 'Refresh Dread'); refresh.type = 'button'; refresh.onclick = () => void load(); box.append(refresh)
+      box.append(node('p', 'Public Access, Gate 1 Delta and reserved Gate 2 Omega. Dread Gate policies are separate from DataCenterData Free, Pro and Intelligence.'))
       const gates = recordTable('Dread Gates', ['Gate', 'Availability', 'Product'])
       for (const [id, gate] of Object.entries(state.gates ?? {})) gates.add(recordRow([gate.name ?? id, id === 'omega' ? 'Reserved · unavailable' : gate.available ? 'Implemented' : 'Unavailable', 'DataCenterDread']))
       box.append(gates.wrap)
@@ -107,11 +81,7 @@ export function setupDread(account) {
       const runs = recordTable('Dread ingestion runs', ['Dataset', 'Started', 'Duration', 'State', 'Records', 'Error'])
       for (const run of state.runs ?? []) runs.add(recordRow([run.dataset_id, displayDate(run.started_at), run.finished_at ? `${run.finished_at - run.started_at} ms` : 'Running', run.status, run.record_count ?? 'Not recorded', run.error ?? 'None']))
       box.append(runs.wrap)
-    } catch (error) {
-      box.replaceChildren(node('h2', 'DataCenterDread // Delta Access'), notice)
-      notice.textContent = error.message
-      const retry = node('button', 'Retry Dread'); retry.onclick = () => void load(); box.append(retry)
-    } finally { loading = false }
-  }
+      return box
+  })
   void load()
 }

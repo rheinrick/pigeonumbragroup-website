@@ -14,7 +14,7 @@ const fixture={
 const server=createServer((request,response)=>{
   const path=new URL(request.url,'http://localhost').pathname
   if(path==='/') {response.setHeader('Content-Type','text/html');return response.end(`<!doctype html><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/admin.css"><main><section id="dread" class="workspace-panel is-current"></section></main><script type="module">import {setupDread} from '/dread.js';setupDread({role:${JSON.stringify(role)}})</script>`)}
-  if(['/dread.js','/records.js','/admin.css'].includes(path)){response.setHeader('Content-Type',path.endsWith('.css')?'text/css':'text/javascript');return response.end(readFileSync('public'+path))}
+  if(['/dread.js','/records.js','/panel-actions.js','/admin.css'].includes(path)){response.setHeader('Content-Type',path.endsWith('.css')?'text/css':'text/javascript');return response.end(readFileSync('public'+path))}
   response.statusCode=404;response.end('Not found')
 })
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve))
@@ -52,6 +52,13 @@ try {
   const domainForm=panel.locator('form').filter({has:page.getByRole('button',{name:'Save Dread domain'})})
   await domainForm.getByLabel('Description').fill('Updated synthetic health-domain context.')
   await domainForm.getByLabel('Review reason').fill('Reviewed Dread domain description.')
+  await page.route('**/api/admin/dread/domain',route=>route.fulfill({status:400,json:{error:'Synthetic validation rejection'}}))
+  await domainForm.getByRole('button',{name:'Save Dread domain'}).click()
+  await expect(panel.getByRole('status')).toContainText('Synthetic validation rejection')
+  await expect(domainForm.getByRole('button',{name:'Save Dread domain'})).toBeEnabled()
+  await expect(layerForm.getByLabel('Enabled')).toBeDisabled()
+  await expect(layerForm.getByLabel('Enabled')).not.toBeChecked()
+  await page.unroute('**/api/admin/dread/domain')
   await domainForm.getByRole('button',{name:'Save Dread domain'}).click()
   await expect(panel.getByRole('status')).toContainText('Saved.')
   assert.equal(actions.at(-1).path,'/api/admin/dread/domain')
@@ -69,6 +76,19 @@ try {
   await staleForm.getByLabel('Review reason').fill('Attempt a stale synthetic policy update.')
   await staleForm.getByRole('button',{name:'Save Dread domain'}).click()
   await expect(panel.getByRole('status')).toContainText('Policy changed. Reload before saving.')
+  conflict=false
+  await page.reload()
+  await panel.getByRole('button',{name:'Inspect Dread domain'}).click()
+  await panel.getByLabel('Description').fill('Keep this draft through a failed refresh.')
+  await panel.locator('form').filter({has:page.getByRole('button',{name:'Save Dread domain'})}).getByLabel('Review reason').fill('Review source policy during synthetic outage.')
+  await page.route('**/api/admin/dread/state',route=>route.fulfill({status:503,body:'Service unavailable'}))
+  await panel.getByRole('button',{name:'Save Dread domain'}).click()
+  await expect(panel.getByRole('status')).toContainText('Saved, but')
+  await expect(panel.getByLabel('Description')).toHaveValue('Keep this draft through a failed refresh.')
+  await expect(panel.getByRole('button',{name:'Save Dread domain'})).toBeDisabled()
+  await page.unroute('**/api/admin/dread/state')
+  await panel.getByRole('button',{name:'Retry Dread'}).click()
+  await expect(panel.getByRole('status')).toContainText('refreshed')
   mkdirSync('test-results',{recursive:true})
   await page.screenshot({path:'test-results/dread-admin-desktop.png',fullPage:true})
   await page.setViewportSize({width:390,height:844})
