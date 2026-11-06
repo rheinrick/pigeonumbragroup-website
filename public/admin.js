@@ -12,6 +12,7 @@ import { setupBilling } from './billing.js'
 import { setupCommunity } from './community.js'
 import { setupUsers } from './users.js'
 let state
+let modulesInitialized = false
 let saving = false, refreshRequired = false
 const $ = (id) => document.getElementById(id)
 const text = (tag, value) => {
@@ -25,7 +26,12 @@ async function load() {
     throw Error(
       'Could not load the admin workspace. Check your sign-in and backend configuration.',
     )
-  state = await r.json()
+  const next = await r.json()
+  if (state && (next.reviewer !== state.reviewer || next.role !== state.role)) {
+    location.reload()
+    return
+  }
+  state = next
   $('identity').textContent =
     `${state.reviewer} · ${state.role} · Revision ${state.revision}`
   renderSystem()
@@ -97,17 +103,21 @@ async function load() {
   }
   $('contacts').replaceChildren(state.contacts?.length ? contacts.wrap : text('p', 'No submissions yet.'))
   applyCapabilities()
-  setupCommunity(state)
-  setupUsers(state)
-  setupBilling(state)
-  setupDeepDives(state)
-  setupEngagement(state)
-  setupSocial(state)
-  setupOperations(state)
-  setupIntelligence(state)
-  setupDread(state)
-  setupParticipation(state)
-  setupInventory()
+  // Independent modules own their refreshes; a core save must preserve their drafts.
+  if (!modulesInitialized) {
+    setupCommunity(state)
+    setupUsers(state)
+    setupBilling(state)
+    setupDeepDives(state)
+    setupEngagement(state)
+    setupSocial(state)
+    setupOperations(state)
+    setupIntelligence(state)
+    setupDread(state)
+    setupParticipation(state)
+    setupInventory()
+    modulesInitialized = true
+  }
   buildSectionMenu()
   navigate()
   $('retry-workspace').hidden = true

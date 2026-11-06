@@ -88,6 +88,7 @@ const server = createServer((req, res) => {
     '/dread.js': 'dread.js',
     '/community.js': 'community.js',
     '/records.js': 'records.js',
+    '/panel-actions.js': 'panel-actions.js',
     '/users.js': 'users.js',
     '/billing.js': 'billing.js',
     '/inventory.js': 'inventory.js',
@@ -208,6 +209,7 @@ try {
     pageSize: 30,
     rows: [inventoryRow],
   }
+  let failInventoryRead = false
   await page.route('**/api/admin/inventory**', async (route) => {
     const path = new URL(route.request().url()).pathname
     if (path.includes('inventory-discovery')) return route.fulfill({json:{revision:0,release:'inventory-fixture',canReview:fixture.role!=='readonly',canImport:fixture.role==='owner',batch:null,latestAttempt:null,total:0,page:0,pageSize:30,counts:{needs_review:0,approve:0,defer:0,reject:0},rows:[]}})
@@ -227,6 +229,7 @@ try {
       return route.fulfill({
         json: { schemaVersion: 1, reviews: [inventoryRow.review] },
       })
+    if (failInventoryRead) return route.fulfill({status:503,json:{error:'Synthetic inventory read outage'}})
     return route.fulfill({
       json: { ...inventory, canReview: fixture.role !== 'readonly' },
     })
@@ -406,6 +409,9 @@ try {
   await page.getByRole('button', { name: 'Save decision', exact: true }).click()
   await expect(page.locator('#notice')).toHaveText('Saved. The workspace has been refreshed.')
   assert.equal(saved.expectedRevision, 2)
+  await section('social')
+  await expect(social.getByLabel('Post text', { exact: true })).toHaveValue('Unsaved synthetic social text')
+  await expect(social.getByRole('button', { name: 'Approve saved draft' })).toBeDisabled()
   await section('publication')
   await expect(
     page.getByRole('button', { name: 'Activate release', exact: true }),
@@ -492,6 +498,14 @@ try {
   assert.equal(download.suggestedFilename(), 'inventory-review-export.json')
   const ledger = JSON.parse(readFileSync(await download.path(), 'utf8'))
   assert.equal(ledger.reviews[0].decision, 'defer')
+  failInventoryRead = true
+  await inv.getByLabel('Review reason', { exact: true }).fill('Keep this synthetic identity deferred pending source review.')
+  await inv.getByRole('button', { name: 'Record review', exact: true }).click()
+  await expect(inv.getByRole('status').last()).toContainText('Saved, but')
+  assert.equal(inventoryActions.length, 2)
+  failInventoryRead = false
+  await inv.getByRole('button', {name:'Search candidates',exact:true}).click()
+  await expect(inv.getByRole('status').last()).toHaveText('Inventory loaded.')
   mkdirSync('test-results', { recursive: true })
   await page.screenshot({
     path: 'test-results/admin-desktop.png',
@@ -522,8 +536,13 @@ try {
   await section('dread')
   await expect(page.locator('#dread')).toContainText('Gate 1 // Delta Access')
   await expect(page.locator('#dread')).toContainText('Reserved · unavailable')
+  await section('layers')
+  await page.locator('#reason').fill('Verify changed account role reloads all modules.')
   fixture.role = 'readonly'
-  await page.reload()
+  const beforeRoleChange = decisionRequests
+  await page.getByRole('button', { name: 'Save decision', exact: true }).click()
+  await expect(page.locator('#identity')).toContainText('readonly')
+  assert.equal(decisionRequests, beforeRoleChange + 1)
   await section('deep-dives')
   await expect(page.locator('#deep-dives')).toBeVisible()
   await section('community')

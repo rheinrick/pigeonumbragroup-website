@@ -24,5 +24,6 @@ jobs:
           npm run test:baby-browser
           npm run test:inventory-discovery-browser
           npm run test:social-browser
+          npm run test:panel-recovery-browser
         env:
           PLAYWRIGHT_CHANNEL: chromium

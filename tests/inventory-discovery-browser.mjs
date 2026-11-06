@@ -119,8 +119,11 @@ try {
   await expect(inbox.locator('.discovery-import [role=\"status\"]')).toContainText('no larger than 14 MB')
   assert.equal(actions.length,2)
   await inbox.getByLabel('Prepared discovery package').setInputFiles({name:'prepared.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({report:{schemaVersion:1},observationBase64:'e30='}))})
+  failure=true
   await inbox.getByRole('button',{name:'Import prepared discovery package'}).click()
   await expect.poll(()=>actions.length).toBe(3)
+  await expect(inbox.getByRole('status').first()).toContainText('Saved, but')
+  failure=false
   assert.deepEqual(actions[2],{report:{schemaVersion:1},observationBase64:'e30=',expectedRevision:6})
   // Failure receipts retain the good batch; role loss removes write controls.
   latestAttempt={status:'failed',checkedAt:'2026-10-04T16:30:00Z'}
@@ -145,6 +148,18 @@ try {
   await expect(inbox.getByRole('button',{name:'Export discovery ledger'})).toBeDisabled()
   failure=false;await inbox.getByRole('button',{name:'Refresh discovery inbox'}).click()
   await expect(inbox).toContainText('Discovery inbox loaded')
+  readonly=false
+  await inbox.getByRole('button',{name:'Refresh discovery inbox'}).click()
+  await expect(first.locator(':scope > summary')).toContainText('Accepted for preparation')
+  await first.locator(':scope > summary').click()
+  failure=true
+  await first.getByRole('button',{name:'Save discovery review'}).click()
+  await expect(inbox.getByRole('status').first()).toContainText('Saved, but')
+  assert.equal(actions.length,4)
+  failure=false
+  await inbox.getByRole('button',{name:'Refresh discovery inbox'}).click()
+  await expect(inbox).toContainText('Discovery inbox loaded')
+  assert.equal(actions.length,4)
   assert.deepEqual(errors,[])
   console.log('PASS: discovery source diffs, geometry, primary evidence, identity, versioned review/audit, reload/export, stale conflict, pagination/filters, prepared import, failure retention, readonly/denial/recovery, XSS and mobile containment.')
 } finally {await browser.close();server.close()}

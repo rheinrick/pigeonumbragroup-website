@@ -68,8 +68,9 @@ export function setupInventory() {
           page: String(page),
         }),
         r = await fetch('/api/admin/inventory?' + params, { cache: 'no-store' })
-      data = await r.json()
-      if (!r.ok) throw Error(data.error ?? 'Inventory unavailable')
+      const value = await r.json()
+      if (!r.ok) throw Error(value.error ?? 'Inventory unavailable')
+      data = value
       summary.replaceChildren(
         el(
           'p',
@@ -142,8 +143,10 @@ export function setupInventory() {
       next.disabled = (page + 1) * data.pageSize >= data.total
       list.replaceChildren(...data.rows.map(render))
       notice.textContent = 'Inventory loaded.'
+      return true
     } catch (e) {
       notice.textContent = e.message
+      return false
     }
   }
   function render(row) {
@@ -248,8 +251,7 @@ export function setupInventory() {
           }),
           result = await response.json()
         if (!response.ok) throw Error(result.error)
-        await load()
-        notice.textContent = result.note
+        notice.textContent = await load() ? result.note : 'Saved, but inventory could not refresh. Search candidates again before another change.'
       } catch (error) {
         notice.textContent = error.message
       } finally {
