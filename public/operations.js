@@ -39,7 +39,7 @@ export function setupOperations(state) {
         'button',
         'Validate Stripe configuration (read only)',
       )
-      check.onclick = () => void save('commerce-check', {})
+      check.onclick = () => void save('commerce-check', {}, 'Stripe configuration checked. Status refreshed.')
       box.append(check, el('h3', 'Checks'))
       const checks = recordTable('Operational checks', ['Check', 'Status', 'Checked', 'Summary'])
       for (const c of d.checks) {

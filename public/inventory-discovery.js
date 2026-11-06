@@ -97,7 +97,8 @@ export function setupInventoryDiscovery(host) {
     try {
       const params = new URLSearchParams({q:q.value, change:change.value, decision:decision.value, priority:priority.value, page:String(page)})
       const value = await result(await fetch(api + '?' + params, {cache:'no-store'}))
-      if (sequence !== requestSequence) return
+      // A newer load owns the outcome, so a superseded one is not a failed refresh.
+      if (sequence !== requestSequence) return true
       data = value
       page = value.page ?? page
       summary.replaceChildren()
@@ -117,7 +118,7 @@ export function setupInventoryDiscovery(host) {
       notice.textContent = value.canReview ? 'Discovery inbox loaded. Review decisions preserve the public catalog.' : 'Discovery inbox loaded. Your role has read-only access.'
       return true
     } catch (error) {
-      if (sequence !== requestSequence) return
+      if (sequence !== requestSequence) return true
       data = null
       summary.replaceChildren()
       provenance.replaceChildren()

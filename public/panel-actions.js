@@ -61,13 +61,13 @@ export function panelActions(box, endpoint, label, title, render) {
       return false
     } finally { loading = false; controls() }
   }
-  async function save(path, payload) {
+  async function save(path, payload, done = 'Saved. Status refreshed.') {
     if (saving || loading || refreshRequired) return
     saving = true; outcome = ''; notice.textContent = 'Saving…'; controls()
     try {
       await request(path, payload)
       outcome = 'saved'; refreshRequired = true
-      if (await load()) notice.textContent = 'Saved. Status refreshed.'
+      if (await load()) notice.textContent = done
     } catch (error) {
       refreshRequired = !error.status || error.status === 409 || error.status >= 500
       if (!error.status || error.status >= 500) outcome = 'uncertain'
